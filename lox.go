@@ -63,8 +63,8 @@ func error(line int, message string) {
 }
 
 func report(line int, where, message string) {
-    err := fmt.Errorf("[line %d] Error %s: %s")
     hadError = true
+    err := fmt.Errorf("[line %d] Error %s: %s")
     fmt.Println(err)
 }
 
