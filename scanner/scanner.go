@@ -60,7 +60,20 @@ func isAtEnd(s *scanner) boolean {
     return current >= len(s.source)
 }
 
-func advance() string {
+func advance(s *scanner) string {
+    return string(s.source[current++])
 }
+
+func addToken(s* scanner, type int, literal *interface{}) {
+    text := s.source[start:current]
+
+    if literal == nil {
+        s.tokens = append(s.tokens, text, nil, line)
+        return
+    }
+
+    s.tokens = append(s.tokens, text, literal, line)
+}
+
     
 
