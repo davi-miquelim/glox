@@ -12,7 +12,7 @@ type token struct {
     literal interface{}
 }
 
-func NewToken(lexeme string, literal interface{}, type, line int) *token {
+func NewToken(type int, lexeme string, literal, line int) *token {
     t := token{lexeme: lexeme, literal: literal, type: type, line: line}
     return &t
 }
