@@ -68,11 +68,11 @@ func addToken(s* scanner, type int, literal *interface{}) {
     text := s.source[start:current]
 
     if literal == nil {
-        s.tokens = append(s.tokens, text, nil, line)
+        s.tokens = append(s.tokens, token.NewToken(text, nil, line))
         return
     }
 
-    s.tokens = append(s.tokens, text, literal, line)
+    s.tokens = append(s.tokens, token.NewToken(text, literal, line))
 }
 
     
