@@ -2,28 +2,28 @@ package scanner
 
 import (
     "glox/lox"
-    "glox/token"
-    "glox/tokentype"
+    "glox/token/token"
+    "glox/token/tokentype"
 )
 
-var start := 0
-var current := 0
-var line := 1
+var start = 0
+var current = 0
+var line = 1
 
 type scanner struct {
     source string
     tokens []interface{}
 }
 
-func NewScanner(source string, tokens []string) *scanner {
+func NewScanner(source string, tokens []interface{}) *scanner {
     s := scanner{source: source, tokens: tokens}
     return &s
 }
 
 func scanTokens(s *scanner) []interface{} {
-    for isAtEnd != true {
+    for s.isAtEnd() != true {
         start = current
-        s.scanToken()
+        scanToken()
     }
 
     s.tokens = append(s.tokens, token.NewToken(tokentype.Eof, "", nil, line))
@@ -35,47 +35,62 @@ func scanToken(s *scanner) {
 
     switch c {
     case "(":
-        s.addToken(tokentype.LeftParen)
+        s.addToken(tokentype.LeftParen, nil)
     case ")":
-        s.addToken(tokentype.RightParen)
+        s.addToken(tokentype.RightParen, nil)
     case "{":
-        s.addToken(tokentype.LeftBrace)
+        s.addToken(tokentype.LeftBrace, nil)
     case "}":
-        s.addToken(tokentype.RightBrace)
+        s.addToken(tokentype.RightBrace, nil)
     case ",":
-        s.addToken(tokentype.Comma)
+        s.addToken(tokentype.Comma, nil)
     case ".":
-        s.addToken(tokentype.Dot)
+        s.addToken(tokentype.Dot, nil)
     case "-":
-        s.addToken(tokentype.Minus)
+        s.addToken(tokentype.Minus, nil)
     case "+":
-        s.addToken(tokentype.Plus)
+        s.addToken(tokentype.Plus, nil)
     case ";":
-        s.addToken(tokentype.SemiColon)
+        s.addToken(tokentype.SemiColon, nil)
     case "*":
-        s.addToken(tokentype.Star)
-    case "!" && s.match('=') == true:
-        s.addToken(tokentype.BangEqual)
-    case "!" && s.match('=') == false:
-        s.addToken(tokentype.Bang)
-    case "=" && s.match('=') == true:
-        s.addToken(tokentype.EqualEqual)
-    case "=" && s.match('=') == false:
-        s.addToken(tokentype.Equal)
-    case "<" && s.match('=') == true:
-        s.addToken(tokentype.LessEqual)
-    case "<" && s.match('=') == false:
-        s.addToken(tokentype.Less)
-    case ">" && s.match('=') == true:
-        s.addToken(tokentype.GreaterEqual)
-    case ">" && s.match('=') == false:
-        s.addToken(tokentype.Greater)
-    case "/" && s.match('/') == true:
-        for peek() != "\n" && s.isAtEnd() == false {
-            s.advance()
+        s.addToken(tokentype.Star, nil)
+    case "!":
+        if s.match("=") == false {
+            s.addToken(tokentype.Bang, nil)
+            break
         }
-    case "/" && s.match('/') == false:
-        s.addToken(tokentype.Slash)
+
+        s.addToken(tokentype.BangEqual, nil)
+    case "=":
+        if s.match("=") == false {
+            s.addToken(tokentype.Equal, nil)
+            break
+        }
+
+        s.addToken(tokentype.EqualEqual, nil)
+    case "<":
+        if s.match("=") == false {
+            s.addToken(tokentype.LessEqual, nil)
+            break
+        }
+
+        s.addToken(tokentype.Less, nil)
+    case ">":
+        if s.match("=") == false {
+            s.addToken(tokentype.Greater, nil)
+            break
+        }
+
+        s.addToken(tokentype.GreaterEqual, nil)
+    case "/":
+        if s.match("/") == true {
+            for s.peek() != "\n" && s.isAtEnd() == false {
+                s.advance()
+            }
+            break
+        } 
+
+        s.addToken(tokentype.Slash, nil)
     case " ":
     case "\r":
     case "\t":
@@ -88,7 +103,7 @@ func scanToken(s *scanner) {
     }
 }
 
-func str(s* scanner) {
+func (s *scanner) str() {
     for s.peek() != "\"" && s.isAtEnd() == false {
         if s.peek() == "\n" {
             line++
@@ -104,10 +119,10 @@ func str(s* scanner) {
 
     s.advance()
     value := s.source[start + 1:current]
-    s.addToken(tokentype.String, value)
+    s.addToken(tokentype.String, &value)
 }
 
-func match(s* scanner, expected string) boolean {
+func (s *scanner) match(expected string)  bool {
     if s.isAtEnd() {
         return false
     }
@@ -120,23 +135,24 @@ func match(s* scanner, expected string) boolean {
     return true
 }
 
-func peek(s* scanner) string {
+func (s *scanner) peek() string {
     if s.isAtEnd() {
-        return "\0"
+        return "\\0"
     }
 
     return string(s.source[current])
 }
 
-func isAtEnd(s *scanner) boolean {
+func (s *scanner) isAtEnd() bool {
     return current >= len(s.source)
 }
 
-func advance(s *scanner) string {
-    return string(s.source[current++])
+func (s *scanner) advance() string {
+    current++
+    return string(s.source[current])
 }
 
-func addToken(s* scanner, type int, literal *interface{}) {
+func (s *scanner) addToken(tokentype int, literal *string) {
     text := s.source[start:current]
 
     if literal == nil {
@@ -146,4 +162,3 @@ func addToken(s* scanner, type int, literal *interface{}) {
 
     s.tokens = append(s.tokens, token.NewToken(text, literal, line))
 }
-
