@@ -1,6 +1,7 @@
 package scanner
 
 import (
+    "glox/lox"
     "glox/token"
     "glox/tokentype"
 )
@@ -33,27 +34,98 @@ func scanToken(s *scanner) {
     c := s.advance()
 
     switch c {
-    case '(':
+    case "(":
         s.addToken(tokentype.LeftParen)
-    case ')':
+    case ")":
         s.addToken(tokentype.RightParen)
-    case '{':
+    case "{":
         s.addToken(tokentype.LeftBrace)
-    case '}':
+    case "}":
         s.addToken(tokentype.RightBrace)
-    case ',':
+    case ",":
         s.addToken(tokentype.Comma)
-    case '.':
+    case ".":
         s.addToken(tokentype.Dot)
-    case '-':
+    case "-":
         s.addToken(tokentype.Minus)
-    case '+':
+    case "+":
         s.addToken(tokentype.Plus)
-    case ';':
-        s.addToken(tokenType.SemiColon)
-    case '*':
-        s.addToken(tokenType.Star)
+    case ";":
+        s.addToken(tokentype.SemiColon)
+    case "*":
+        s.addToken(tokentype.Star)
+    case "!" && s.match('=') == true:
+        s.addToken(tokentype.BangEqual)
+    case "!" && s.match('=') == false:
+        s.addToken(tokentype.Bang)
+    case "=" && s.match('=') == true:
+        s.addToken(tokentype.EqualEqual)
+    case "=" && s.match('=') == false:
+        s.addToken(tokentype.Equal)
+    case "<" && s.match('=') == true:
+        s.addToken(tokentype.LessEqual)
+    case "<" && s.match('=') == false:
+        s.addToken(tokentype.Less)
+    case ">" && s.match('=') == true:
+        s.addToken(tokentype.GreaterEqual)
+    case ">" && s.match('=') == false:
+        s.addToken(tokentype.Greater)
+    case "/" && s.match('/') == true:
+        for peek() != "\n" && s.isAtEnd() == false {
+            s.advance()
+        }
+    case "/" && s.match('/') == false:
+        s.addToken(tokentype.Slash)
+    case " ":
+    case "\r":
+    case "\t":
+    case "\n":
+        line++
+    case "\"":
+        s.str()
+    default:
+        lox.Error(line, "Unexpected character.")
     }
+}
+
+func str(s* scanner) {
+    for s.peek() != "\"" && s.isAtEnd() == false {
+        if s.peek() == "\n" {
+            line++
+        }
+
+        s.advance()
+    }
+
+    if s.isAtEnd() {
+        lox.Error(line, "Unterminated string")
+        return 
+    }
+
+    s.advance()
+    value := s.source[start + 1:current]
+    s.addToken(tokentype.String, value)
+}
+
+func match(s* scanner, expected string) boolean {
+    if s.isAtEnd() {
+        return false
+    }
+
+    if string(s.source[current]) != expected {
+        return false
+    }
+
+    current++
+    return true
+}
+
+func peek(s* scanner) string {
+    if s.isAtEnd() {
+        return "\0"
+    }
+
+    return string(s.source[current])
 }
 
 func isAtEnd(s *scanner) boolean {
@@ -74,6 +146,4 @@ func addToken(s* scanner, type int, literal *interface{}) {
 
     s.tokens = append(s.tokens, token.NewToken(text, literal, line))
 }
-
-    
 
