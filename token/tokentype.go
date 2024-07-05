@@ -1,4 +1,4 @@
-package tokentype
+package token
 
 const (
     // Single character tokens
