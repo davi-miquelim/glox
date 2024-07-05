@@ -10,7 +10,7 @@ const (
     Dot
     Minus
     Plus
-    Semicolon
+    SemiColon
     Slash
     Star
     
@@ -20,7 +20,7 @@ const (
     Equal
     EqualEqual
     Greater
-    GreateEqual
+    GreaterEqual
     Less
     LessEqual
 

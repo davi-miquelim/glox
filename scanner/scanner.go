@@ -2,8 +2,7 @@ package scanner
 
 import (
     "glox/lox"
-    "glox/token/token"
-    "glox/token/tokentype"
+    "glox/token"
 )
 
 var start = 0
@@ -23,65 +22,65 @@ func NewScanner(source string, tokens []interface{}) *scanner {
 func scanTokens(s *scanner) []interface{} {
     for s.isAtEnd() != true {
         start = current
-        scanToken()
+        s.scanToken()
     }
 
-    s.tokens = append(s.tokens, token.NewToken(tokentype.Eof, "", nil, line))
+    s.tokens = append(s.tokens, token.NewToken(token.Eof, "", nil, line))
     return s.tokens
 }
 
-func scanToken(s *scanner) {
+func (s *scanner) scanToken() {
     c := s.advance()
 
     switch c {
     case "(":
-        s.addToken(tokentype.LeftParen, nil)
+        s.addToken(token.LeftParen, nil)
     case ")":
-        s.addToken(tokentype.RightParen, nil)
+        s.addToken(token.RightParen, nil)
     case "{":
-        s.addToken(tokentype.LeftBrace, nil)
+        s.addToken(token.LeftBrace, nil)
     case "}":
-        s.addToken(tokentype.RightBrace, nil)
+        s.addToken(token.RightBrace, nil)
     case ",":
-        s.addToken(tokentype.Comma, nil)
+        s.addToken(token.Comma, nil)
     case ".":
-        s.addToken(tokentype.Dot, nil)
+        s.addToken(token.Dot, nil)
     case "-":
-        s.addToken(tokentype.Minus, nil)
+        s.addToken(token.Minus, nil)
     case "+":
-        s.addToken(tokentype.Plus, nil)
+        s.addToken(token.Plus, nil)
     case ";":
-        s.addToken(tokentype.SemiColon, nil)
+        s.addToken(token.SemiColon, nil)
     case "*":
-        s.addToken(tokentype.Star, nil)
+        s.addToken(token.Star, nil)
     case "!":
         if s.match("=") == false {
-            s.addToken(tokentype.Bang, nil)
+            s.addToken(token.Bang, nil)
             break
         }
 
-        s.addToken(tokentype.BangEqual, nil)
+        s.addToken(token.BangEqual, nil)
     case "=":
         if s.match("=") == false {
-            s.addToken(tokentype.Equal, nil)
+            s.addToken(token.Equal, nil)
             break
         }
 
-        s.addToken(tokentype.EqualEqual, nil)
+        s.addToken(token.EqualEqual, nil)
     case "<":
         if s.match("=") == false {
-            s.addToken(tokentype.LessEqual, nil)
+            s.addToken(token.LessEqual, nil)
             break
         }
 
-        s.addToken(tokentype.Less, nil)
+        s.addToken(token.Less, nil)
     case ">":
         if s.match("=") == false {
-            s.addToken(tokentype.Greater, nil)
+            s.addToken(token.Greater, nil)
             break
         }
 
-        s.addToken(tokentype.GreaterEqual, nil)
+        s.addToken(token.GreaterEqual, nil)
     case "/":
         if s.match("/") == true {
             for s.peek() != "\n" && s.isAtEnd() == false {
@@ -90,7 +89,7 @@ func scanToken(s *scanner) {
             break
         } 
 
-        s.addToken(tokentype.Slash, nil)
+        s.addToken(token.Slash, nil)
     case " ":
     case "\r":
     case "\t":
@@ -119,7 +118,7 @@ func (s *scanner) str() {
 
     s.advance()
     value := s.source[start + 1:current]
-    s.addToken(tokentype.String, &value)
+    s.addToken(token.String, &value)
 }
 
 func (s *scanner) match(expected string)  bool {
@@ -152,13 +151,13 @@ func (s *scanner) advance() string {
     return string(s.source[current])
 }
 
-func (s *scanner) addToken(tokentype int, literal *string) {
+func (s *scanner) addToken(tokentype int, literal *[]string) {
     text := s.source[start:current]
 
     if literal == nil {
-        s.tokens = append(s.tokens, token.NewToken(text, nil, line))
+        s.tokens = append(s.tokens, token.NewToken(tokentype, text, nil, line))
         return
     }
 
-    s.tokens = append(s.tokens, token.NewToken(text, literal, line))
+    s.tokens = append(s.tokens, token.NewToken(tokentype, text, literal, line))
 }

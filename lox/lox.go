@@ -4,11 +4,12 @@ import (
     "fmt"
     "os"
     "bufio"
+    "strings"
 )
 
 var hadError = false
 
-func main(args string[]) {
+func main(args []string) {
     if len(args) > 1 {
         fmt.Println("Usage: glox [script]") 
         os.Exit(64)
@@ -50,8 +51,7 @@ func runPrompt() {
 }
 
 func run(source string) {
-    scanner := bufio.NewScanner(source)
-    scanner := bufio.Split(bufio.ScanWords)
+    scanner := bufio.NewScanner(strings.NewReader(source))
 
     for scanner.Scan() {
         fmt.Println(scanner.Text())
@@ -59,12 +59,19 @@ func run(source string) {
 }
 
 func Error(line int, message string) {
-    report(line, message)
+    report(line, nil, message)
 }
 
-func report(line int, where, message string) {
+func report(line int, where *string, message string) {
     hadError = true
-    err := fmt.Errorf("[line %d] Error %s: %s")
+
+    if where == nil {
+        err := fmt.Errorf("[line %d] Error %s", line, message)
+        fmt.Println(err)
+        return
+    }
+
+    err := fmt.Errorf("[line %d] Error %s: %s", line, message, *where)
     fmt.Println(err)
 }
 
