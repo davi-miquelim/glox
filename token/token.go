@@ -8,10 +8,10 @@ type token struct {
     tokenType int
     line int
     lexeme  string
-    literal string
+    literal interface{}
 }
 
-func NewToken(tokenType int, lexeme string, literal *string, line int) *token {
+func NewToken(tokenType int, lexeme string, literal *interface{}, line int) *token {
     if literal == nil {
         t := token{lexeme: lexeme, tokenType: tokenType, line: line}
         return &t
