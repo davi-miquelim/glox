@@ -27,7 +27,7 @@ func RunFile(path string) {
 func RunPrompt() {
     for {
         scanner := bufio.NewScanner(os.Stdin)
-        fmt.Println("> ")
+        fmt.Print("> ")
 
         didScan := scanner.Scan()
 
