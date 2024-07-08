@@ -4,7 +4,6 @@ import (
     "fmt"
     "os"
     "bufio"
-    "strings"
     "glox/scanner"
 )
 
@@ -41,11 +40,8 @@ func RunPrompt() {
 }
 
 func run(source string) {
-    scanner := bufio.NewScanner(strings.NewReader(source))
-
-    for scanner.Scan() {
-        fmt.Println(scanner.Text())
-    }
+    lexer := scanner.NewScanner(source, nil)
+    lexer.ScanTokens()
 }
 
 func Error(line int, message string) {

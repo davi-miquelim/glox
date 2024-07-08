@@ -37,11 +37,17 @@ type scanner struct {
 }
 
 func NewScanner(source string, tokens []interface{}) *scanner {
+    if tokens == nil {
+        var emtptyTokens []interface{}
+        s := scanner{source: source, tokens: emtptyTokens}
+        return &s
+    }
+
     s := scanner{source: source, tokens: tokens}
     return &s
 }
 
-func scanTokens(s *scanner) []interface{} {
+func (s *scanner) ScanTokens() []interface{} {
     for s.isAtEnd() != true {
         start = current
         s.scanToken()
