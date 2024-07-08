@@ -2,7 +2,8 @@ package token
 
 const (
     // Single character tokens
-    LeftParen = iota
+    _ = iota
+    LeftParen 
     RightParen
     LeftBrace
     RightBrace

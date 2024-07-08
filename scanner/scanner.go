@@ -135,7 +135,15 @@ func (s *scanner) identifier() {
         s.advance()
     } 
 
-    s.addToken(token.Identifier, nil)
+    text := s.source[start:current + 1]
+    tokenType := keywords[text]
+
+    if tokenType == 0 {
+        s.addToken(token.Identifier, nil)
+        return
+    }
+
+    s.addToken(tokenType, nil)
 }
 
 func (s *scanner) number() {
