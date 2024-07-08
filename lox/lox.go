@@ -5,13 +5,13 @@ import (
     "os"
     "bufio"
     "strings"
+    "glox/scanner"
 )
 
 var hadError = false
 
-
 func RunFile(path string) {
-    if hadError == true {
+    if hadError == true || scanner.HadError == true {
         os.Exit(65)
     }
 

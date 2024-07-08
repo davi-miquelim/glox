@@ -1,15 +1,16 @@
 package scanner
 
 import (
-    "glox/lox"
     "glox/token"
     "strconv"
     "unicode"
+    "fmt"
 )
 
 var start = 0
 var current = 0
 var line = 1
+var HadError = false
 
 var keywords = map[string]int{
     "and": token.And,
@@ -124,9 +125,21 @@ func (s *scanner) scanToken() {
         } else if unicode.IsLetter(rune(c)) || string(c) == "_" {
             s.identifier()
         } else {
-            lox.Error(line, "Unexpected character.")
+            Error(line, nil, "Unexpected character.")
         }
     }
+}
+
+func Error(line int, where *string, message string) { 
+    HadError = true
+    if where == nil {
+        err := fmt.Errorf("[line %d] Error %s", line, message)
+        fmt.Println(err)
+        return
+    }
+
+    err := fmt.Errorf("[line %d] Error %s: %s", line, message, *where)
+    fmt.Println(err)
 }
 
 func (s *scanner) identifier() {
@@ -180,7 +193,7 @@ func (s *scanner) str() {
     }
 
     if s.isAtEnd() {
-        lox.Error(line, "Unterminated string")
+        Error(line, nil, "Unterminated string")
         return 
     }
 
