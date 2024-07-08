@@ -9,18 +9,8 @@ import (
 
 var hadError = false
 
-func main(args []string) {
-    if len(args) > 1 {
-        fmt.Println("Usage: glox [script]") 
-        os.Exit(64)
-    } else if len(args) == 1 {
-        runFile(args[0])
-    } else {
-        runPrompt()
-    }
-}
 
-func runFile(path string) {
+func RunFile(path string) {
     if hadError == true {
         os.Exit(65)
     }
@@ -34,7 +24,7 @@ func runFile(path string) {
     run(string(data))
 }
 
-func runPrompt() {
+func RunPrompt() {
     for {
         scanner := bufio.NewScanner(os.Stdin)
         fmt.Println("> ")
