@@ -59,7 +59,6 @@ func (s *scanner) ScanTokens() []interface{} {
 
 func (s *scanner) scanToken() {
     c := s.advance()
-    fmt.Println("char", string(c))
 
     switch string(c) {
     case "(":
@@ -261,8 +260,6 @@ func (s *scanner) advance() byte {
 
 func (s *scanner) addToken(tokentype int, literal *interface{}) {
     text := s.source[start:current]
-    fmt.Println("tokentype", tokentype)
-    fmt.Println("token", text)
 
     if literal == nil {
         s.Tokens = append(s.Tokens, token.NewToken(tokentype, text, nil, line))
