@@ -127,6 +127,10 @@ func (s *scanner) scanToken() {
 
 		if s.match("*") == true {
 			for s.isAtEnd() == false && s.peek() + s.peekNext() != "*/" {
+                if s.peek() == "\n" {
+                    s.line++
+                }
+
 				s.advance()
 			}
 			break
