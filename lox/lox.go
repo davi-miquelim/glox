@@ -10,7 +10,7 @@ import (
 var hadError = false
 
 func RunFile(path string) {
-	if hadError == true || scanner.HadError == true {
+	if hadError == true {
 		os.Exit(65)
 	}
 
@@ -42,6 +42,10 @@ func RunPrompt() {
 func run(source string) {
 	lexer := scanner.NewScanner(source, nil)
 	lexer.ScanTokens()
+
+    if lexer.HadError == true {
+        hadError = true
+    }
 }
 
 func Error(line int, message string) {
