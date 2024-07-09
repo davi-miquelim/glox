@@ -2,16 +2,18 @@ package scanner_test
 
 import (
 	"glox/scanner"
+	"glox/token"
 	"testing"
 )
 
 func TestScanTokens(t *testing.T) {
 	var tests = []struct {
 		source string
-		tokens []interface{}
+		tokens *[]token.Token
 	}{
-//        {"9", nil},
-//       {"9999.99", nil},
+        {"\"test string\"", nil},
+        {"9", nil},
+        {"9999.99", nil},
         {"ab", nil},
         {"(", nil},
         {")", nil},
@@ -22,6 +24,7 @@ func TestScanTokens(t *testing.T) {
         {";", nil},
         {"*", nil},
         {"==", nil},
+        {"=", nil},
         {"=!", nil},
         {"=>", nil},
         {">=", nil},

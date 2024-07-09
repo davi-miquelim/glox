@@ -29,17 +29,16 @@ var keywords = map[string]int{
 
 type scanner struct {
 	source string
-	Tokens []interface{}
+	Tokens *[]token.Token
     HadError bool
     current int
     start int
     line int
 }
 
-func NewScanner(source string, tokens []interface{}) *scanner {
+func NewScanner(source string, tokens *[]token.Token) *scanner {
 	if tokens == nil {
-		var emtptyTokens []interface{}
-        s := scanner{source: source, Tokens: emtptyTokens, current: 0, start: 0, line: 1, HadError: false}
+        s := scanner{source: source, Tokens: nil, current: 0, start: 0, line: 1, HadError: false}
 		return &s
 	}
 
@@ -47,14 +46,23 @@ func NewScanner(source string, tokens []interface{}) *scanner {
 	return &s
 }
 
-func (s *scanner) ScanTokens() []interface{} {
+func (s *scanner) ScanTokens() []token.Token {
 	for s.isAtEnd() != true {
 		s.start = s.current
 		s.scanToken()
 	}
 
-	s.Tokens = append(s.Tokens, token.NewToken(token.Eof, "", nil, s.line))
-	return s.Tokens
+    eofToken := token.NewToken(token.Eof, "", nil, s.line)
+
+    if s.Tokens == nil {
+        tSlice := []token.Token{*eofToken}
+        return tSlice 
+
+    }
+
+    tSlice := append(*s.Tokens, *eofToken) 
+	s.Tokens = &tSlice 
+	return *s.Tokens
 }
 
 func (s *scanner) scanToken() {
@@ -262,9 +270,11 @@ func (s *scanner) addToken(tokentype int, literal *interface{}) {
 	text := s.source[s.start:s.current]
 
 	if literal == nil {
-		s.Tokens = append(s.Tokens, token.NewToken(tokentype, text, nil, s.line))
+        tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, nil, s.line))
+		s.Tokens = &tSlice
 		return
 	}
 
-	s.Tokens = append(s.Tokens, token.NewToken(tokentype, text, literal, s.line))
+    tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, literal, s.line))
+	s.Tokens = &tSlice
 }
