@@ -33,17 +33,17 @@ var keywords = map[string]int{
 
 type scanner struct {
     source string
-    tokens []interface{}
+    Tokens []interface{}
 }
 
 func NewScanner(source string, tokens []interface{}) *scanner {
     if tokens == nil {
         var emtptyTokens []interface{}
-        s := scanner{source: source, tokens: emtptyTokens}
+        s := scanner{source: source, Tokens: emtptyTokens}
         return &s
     }
 
-    s := scanner{source: source, tokens: tokens}
+    s := scanner{source: source, Tokens: tokens}
     return &s
 }
 
@@ -53,8 +53,8 @@ func (s *scanner) ScanTokens() []interface{} {
         s.scanToken()
     }
 
-    s.tokens = append(s.tokens, token.NewToken(token.Eof, "", nil, line))
-    return s.tokens
+    s.Tokens = append(s.Tokens, token.NewToken(token.Eof, "", nil, line))
+    return s.Tokens
 }
 
 func (s *scanner) scanToken() {
@@ -265,9 +265,9 @@ func (s *scanner) addToken(tokentype int, literal *interface{}) {
     fmt.Println("token", text)
 
     if literal == nil {
-        s.tokens = append(s.tokens, token.NewToken(tokentype, text, nil, line))
+        s.Tokens = append(s.Tokens, token.NewToken(tokentype, text, nil, line))
         return
     }
 
-    s.tokens = append(s.tokens, token.NewToken(tokentype, text, literal, line))
+    s.Tokens = append(s.Tokens, token.NewToken(tokentype, text, literal, line))
 }

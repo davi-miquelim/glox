@@ -5,7 +5,11 @@ import (
     "glox/scanner"
 )
 
-func TestScanner(t * testing.T) {
+func TestScanTokens(t * testing.T) {
     lexer := scanner.NewScanner("3", nil)
     lexer.ScanTokens()
+
+    if scanner.HadError == true {
+        t.Errorf("ScanTokens")
+    }
 }
