@@ -122,7 +122,7 @@ func (s *scanner) scanToken() {
 	case "\r":
 	case "\t":
 	case "\n":
-		line++
+		s.line++
 	case "\"":
 		s.str()
 	default:
@@ -131,13 +131,13 @@ func (s *scanner) scanToken() {
 		} else if unicode.IsLetter(rune(c)) || string(c) == "_" {
 			s.identifier()
 		} else {
-			Error(line, nil, "Unexpected character.")
+			s.Error(s.line, nil, "Unexpected character.")
 		}
 	}
 }
 
-func Error(line int, where *string, message string) {
-	HadError = true
+func (s *scanner) Error(line int, where *string, message string) {
+	s.HadError = true
 	if where == nil {
 		err := fmt.Errorf("[line %d] Error %s", line, message)
 		fmt.Println(err)
@@ -199,7 +199,7 @@ func (s *scanner) str() {
 	}
 
 	if s.isAtEnd() {
-		Error(s.line, nil, "Unterminated string")
+		s.Error(s.line, nil, "Unterminated string")
 		return
 	}
 
