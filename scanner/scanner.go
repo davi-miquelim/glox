@@ -179,7 +179,7 @@ func (s *scanner) number() {
         }
     }
 
-    strDigit := string(s.source[start:current + 1])
+    strDigit := string(s.source[start:current])
     digit, err := strconv.ParseFloat(strDigit, 64)
     var iDigit interface{} = digit
 
@@ -205,7 +205,7 @@ func (s *scanner) str() {
     }
 
     s.advance()
-    value := s.source[start + 1:current]
+    value := s.source[start + 1:current - 1]
     var iValue interface{} = value
     s.addToken(token.String, &iValue)
 }
