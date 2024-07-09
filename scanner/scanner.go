@@ -239,7 +239,7 @@ func (s *scanner) peek() string {
 }
 
 func (s *scanner) peekNext() string {
-	if s.current+1 >= len(s.source) {
+	if s.current + 1 >= len(s.source) {
 		return "\\0"
 	}
 
@@ -268,6 +268,16 @@ func (s *scanner) advance() byte {
 
 func (s *scanner) addToken(tokentype int, literal *interface{}) {
 	text := s.source[s.start:s.current]
+
+    if s.Tokens == nil && literal == nil {
+        tSlice := []token.Token{*token.NewToken(tokentype, text, nil, s.line)}
+        s.Tokens = &tSlice
+    }
+
+    if s.Tokens == nil && literal != nil {
+        tSlice := []token.Token{*token.NewToken(tokentype, text, literal, s.line)}
+        s.Tokens = &tSlice
+    }
 
 	if literal == nil {
         tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, nil, s.line))
