@@ -150,11 +150,11 @@ func (s *scanner) Error(line int, where *string, message string) {
 
 func (s *scanner) identifier() {
 	c := s.peek()
-	for len(c) == 1 && (unicode.IsLetter(rune(c[0])) || unicode.IsDigit(rune(c[0]))) {
+	for s.isAtEnd() == true && len(c) == 1 && (unicode.IsLetter(rune(c[0])) || unicode.IsDigit(rune(c[0]))) {
 		s.advance()
 	}
 
-	text := s.source[s.start : s.current+1]
+	text := s.source[s.start : s.current]
 	tokenType := keywords[text]
 
 	if tokenType == 0 {
