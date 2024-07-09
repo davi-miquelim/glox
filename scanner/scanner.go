@@ -7,10 +7,6 @@ import (
 	"unicode"
 )
 
-var start = 0
-var current = 0
-var line = 1
-var HadError = false
 
 var keywords = map[string]int{
 	"and":    token.And,
@@ -34,26 +30,30 @@ var keywords = map[string]int{
 type scanner struct {
 	source string
 	Tokens []interface{}
+    HadError bool
+    current int
+    start int
+    line int
 }
 
 func NewScanner(source string, tokens []interface{}) *scanner {
 	if tokens == nil {
 		var emtptyTokens []interface{}
-		s := scanner{source: source, Tokens: emtptyTokens}
+        s := scanner{source: source, Tokens: emtptyTokens, current: 0, start: 0, line: 1, HadError: false}
 		return &s
 	}
 
-	s := scanner{source: source, Tokens: tokens}
+	s := scanner{source: source, Tokens: tokens, current: 0, start: 0, line: 1, HadError: false}
 	return &s
 }
 
 func (s *scanner) ScanTokens() []interface{} {
 	for s.isAtEnd() != true {
-		start = current
+		s.start = s.current
 		s.scanToken()
 	}
 
-	s.Tokens = append(s.Tokens, token.NewToken(token.Eof, "", nil, line))
+	s.Tokens = append(s.Tokens, token.NewToken(token.Eof, "", nil, s.line))
 	return s.Tokens
 }
 
@@ -154,7 +154,7 @@ func (s *scanner) identifier() {
 		s.advance()
 	}
 
-	text := s.source[start : current+1]
+	text := s.source[s.start : s.current+1]
 	tokenType := keywords[text]
 
 	if tokenType == 0 {
@@ -178,7 +178,7 @@ func (s *scanner) number() {
 		}
 	}
 
-	strDigit := string(s.source[start:current])
+	strDigit := string(s.source[s.start:s.current])
 	digit, err := strconv.ParseFloat(strDigit, 64)
 	var iDigit interface{} = digit
 
@@ -192,19 +192,19 @@ func (s *scanner) number() {
 func (s *scanner) str() {
 	for s.peek() != "\"" && s.isAtEnd() == false {
 		if s.peek() == "\n" {
-			line++
+			s.line++
 		}
 
 		s.advance()
 	}
 
 	if s.isAtEnd() {
-		Error(line, nil, "Unterminated string")
+		Error(s.line, nil, "Unterminated string")
 		return
 	}
 
 	s.advance()
-	value := s.source[start+1 : current-1]
+	value := s.source[s.start+1 : s.current-1]
 	var iValue interface{} = value
 	s.addToken(token.String, &iValue)
 }
@@ -214,11 +214,11 @@ func (s *scanner) match(expected string) bool {
 		return false
 	}
 
-	if string(s.source[current]) != expected {
+	if string(s.source[s.current]) != expected {
 		return false
 	}
 
-	current++
+	s.current++
 	return true
 }
 
@@ -227,15 +227,15 @@ func (s *scanner) peek() string {
 		return "\\0"
 	}
 
-	return string(s.source[current])
+	return string(s.source[s.current])
 }
 
 func (s *scanner) peekNext() string {
-	if current+1 >= len(s.source) {
+	if s.current+1 >= len(s.source) {
 		return "\\0"
 	}
 
-	return string(s.source[current+1])
+	return string(s.source[s.current+1])
 }
 
 func (s *scanner) isDigit(c string) bool {
@@ -249,22 +249,22 @@ func (s *scanner) isDigit(c string) bool {
 }
 
 func (s *scanner) isAtEnd() bool {
-	return current >= len(s.source)
+	return s.current >= len(s.source)
 }
 
 func (s *scanner) advance() byte {
-	currentChar := s.source[current]
-	current++
+	currentChar := s.source[s.current]
+	s.current++
 	return currentChar
 }
 
 func (s *scanner) addToken(tokentype int, literal *interface{}) {
-	text := s.source[start:current]
+	text := s.source[s.start:s.current]
 
 	if literal == nil {
-		s.Tokens = append(s.Tokens, token.NewToken(tokentype, text, nil, line))
+		s.Tokens = append(s.Tokens, token.NewToken(tokentype, text, nil, s.line))
 		return
 	}
 
-	s.Tokens = append(s.Tokens, token.NewToken(tokentype, text, literal, line))
+	s.Tokens = append(s.Tokens, token.NewToken(tokentype, text, literal, s.line))
 }

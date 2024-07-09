@@ -33,9 +33,10 @@ func TestScanTokens(t *testing.T) {
     for _, tt := range tests {
         lexer := scanner.NewScanner(tt.source, tt.tokens)
         lexer.ScanTokens()
+
+        if lexer.HadError == true {
+            t.Errorf("ScanTokens")
+        }
     }
 
-	if scanner.HadError == true {
-		t.Errorf("ScanTokens")
-	}
 }
