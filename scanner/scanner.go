@@ -125,6 +125,13 @@ func (s *scanner) scanToken() {
 			break
 		}
 
+		if s.match("*") == true {
+			for s.isAtEnd() == false && s.peek() + s.peekNext() != "*/" {
+				s.advance()
+			}
+			break
+		}
+
 		s.addToken(token.Slash, nil)
 	case " ":
 	case "\r":
@@ -243,7 +250,7 @@ func (s *scanner) peekNext() string {
 		return "\\0"
 	}
 
-	return string(s.source[s.current+1])
+	return string(s.source[s.current + 1])
 }
 
 func (s *scanner) isDigit(c string) bool {
