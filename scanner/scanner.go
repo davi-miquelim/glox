@@ -225,7 +225,7 @@ func (s *scanner) str() {
 func (s *scanner) blockComment() {
     openCount := 1
 
-    for s.isAtEnd() && openCount > 0 {
+    for s.isAtEnd() == false && openCount > 0 {
         if s.peek() == "\n" {
             s.line++
         }
@@ -307,19 +307,15 @@ func (s *scanner) addToken(tokentype int, literal *interface{}) {
     if s.Tokens == nil && literal == nil {
         tSlice := []token.Token{*token.NewToken(tokentype, text, nil, s.line)}
         s.Tokens = &tSlice
-    }
-
-    if s.Tokens == nil && literal != nil {
+    } else if s.Tokens == nil && literal != nil {
         tSlice := []token.Token{*token.NewToken(tokentype, text, literal, s.line)}
+        s.Tokens = &tSlice
+    } else if literal == nil {
+        tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, nil, s.line))
+		s.Tokens = &tSlice
+	} else {
+        tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, literal, s.line))
         s.Tokens = &tSlice
     }
 
-	if literal == nil {
-        tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, nil, s.line))
-		s.Tokens = &tSlice
-		return
-	}
-
-    tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, literal, s.line))
-	s.Tokens = &tSlice
 }

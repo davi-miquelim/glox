@@ -11,11 +11,12 @@ func TestScanTokens(t *testing.T) {
 		source string
 		tokens *[]token.Token
 	}{
+        {"(", nil},
+        {"// a comment \n", nil},
         {"\"test string\"", nil},
         {"9", nil},
         {"9999.99", nil},
         {"ab", nil},
-        {"(", nil},
         {")", nil},
         {"{", nil},
         {"}", nil},
@@ -28,7 +29,9 @@ func TestScanTokens(t *testing.T) {
         {"=!", nil},
         {"=>", nil},
         {">=", nil},
-        {"// a comment \n", nil},
+        {"/* a comment \n\n this /* is nice */ */ 1234", nil},
+        {"/* a comment \n\n this /* is nice */ */", nil},
+        {"/* a comment \n\n this is nice */ 1234", nil},
     }
 
     for _, tt := range tests {
