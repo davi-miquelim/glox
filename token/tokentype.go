@@ -1,52 +1,52 @@
 package token
 
 const (
-    // Single character tokens
-    _ = iota
-    LeftParen 
-    RightParen
-    LeftBrace
-    RightBrace
-    Comma
-    Dot
-    Minus
-    Plus
-    SemiColon
-    Slash
-    Star
-    
-    // One or two character tokens
-    Bang
-    BangEqual
-    Equal
-    EqualEqual
-    Greater
-    GreaterEqual
-    Less
-    LessEqual
+	// Single character tokens
+	_ = iota
+	LeftParen
+	RightParen
+	LeftBrace
+	RightBrace
+	Comma
+	Dot
+	Minus
+	Plus
+	SemiColon
+	Slash
+	Star
 
-    // Literals
-    Identifier
-    String
-    Number
+	// One or two character tokens
+	Bang
+	BangEqual
+	Equal
+	EqualEqual
+	Greater
+	GreaterEqual
+	Less
+	LessEqual
 
-    // Keywords
-    And
-    Class
-    Else
-    False
-    Fun
-    For
-    If
-    Null
-    Or
-    Print
-    Return
-    Super
-    This
-    True
-    Var
-    While
+	// Literals
+	Identifier
+	String
+	Number
 
-    Eof
+	// Keywords
+	And
+	Class
+	Else
+	False
+	Fun
+	For
+	If
+	Null
+	Or
+	Print
+	Return
+	Super
+	This
+	True
+	Var
+	While
+
+	Eof
 )

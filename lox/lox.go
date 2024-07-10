@@ -43,9 +43,9 @@ func run(source string) {
 	lexer := scanner.NewScanner(source, nil)
 	lexer.ScanTokens()
 
-    if lexer.HadError == true {
-        hadError = true
-    }
+	if lexer.HadError == true {
+		hadError = true
+	}
 }
 
 func Error(line int, message string) {

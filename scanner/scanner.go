@@ -7,7 +7,6 @@ import (
 	"unicode"
 )
 
-
 var keywords = map[string]int{
 	"and":    token.And,
 	"class":  token.Class,
@@ -28,17 +27,17 @@ var keywords = map[string]int{
 }
 
 type scanner struct {
-	source string
-	Tokens *[]token.Token
-    HadError bool
-    current int
-    start int
-    line int
+	source   string
+	Tokens   *[]token.Token
+	HadError bool
+	current  int
+	start    int
+	line     int
 }
 
 func NewScanner(source string, tokens *[]token.Token) *scanner {
 	if tokens == nil {
-        s := scanner{source: source, Tokens: nil, current: 0, start: 0, line: 1, HadError: false}
+		s := scanner{source: source, Tokens: nil, current: 0, start: 0, line: 1, HadError: false}
 		return &s
 	}
 
@@ -52,16 +51,16 @@ func (s *scanner) ScanTokens() []token.Token {
 		s.scanToken()
 	}
 
-    eofToken := token.NewToken(token.Eof, "", nil, s.line)
+	eofToken := token.NewToken(token.Eof, "", nil, s.line)
 
-    if s.Tokens == nil {
-        tSlice := []token.Token{*eofToken}
-        return tSlice 
+	if s.Tokens == nil {
+		tSlice := []token.Token{*eofToken}
+		return tSlice
 
-    }
+	}
 
-    tSlice := append(*s.Tokens, *eofToken) 
-	s.Tokens = &tSlice 
+	tSlice := append(*s.Tokens, *eofToken)
+	s.Tokens = &tSlice
 	return *s.Tokens
 }
 
@@ -126,7 +125,7 @@ func (s *scanner) scanToken() {
 		}
 
 		if s.match("*") == true {
-            s.blockComment()
+			s.blockComment()
 			break
 		}
 
@@ -167,7 +166,7 @@ func (s *scanner) identifier() {
 		s.advance()
 	}
 
-	text := s.source[s.start : s.current]
+	text := s.source[s.start:s.current]
 	tokenType := keywords[text]
 
 	if tokenType == 0 {
@@ -223,33 +222,32 @@ func (s *scanner) str() {
 }
 
 func (s *scanner) blockComment() {
-    openCount := 1
+	openCount := 1
 
-    for s.isAtEnd() == false && openCount > 0 {
-        if s.peek() == "\n" {
-            s.line++
-        }
+	for s.isAtEnd() == false && openCount > 0 {
+		if s.peek() == "\n" {
+			s.line++
+		}
 
-        isOpenComment := (s.peek() + s.peekNext()) == "/*"
-        if isOpenComment {
-            openCount++
-        }
+		isOpenComment := (s.peek() + s.peekNext()) == "/*"
+		if isOpenComment {
+			openCount++
+		}
 
+		isCloseComment := (s.peek() + s.peekNext()) == "*/"
+		if isCloseComment {
+			openCount--
+		}
 
-        isCloseComment := (s.peek() + s.peekNext()) == "*/"
-        if isCloseComment  {
-            openCount--
-        }
+		s.advance()
+	}
 
-        s.advance()
-    }
+	if s.isAtEnd() && openCount > 0 {
+		s.Error(s.line, nil, "Unterminated comment")
+		return
+	}
 
-    if s.isAtEnd() && openCount > 0 {
-        s.Error(s.line, nil, "Unterminated comment")
-        return
-    }
-
-    s.advance()
+	s.advance()
 }
 
 func (s *scanner) match(expected string) bool {
@@ -274,11 +272,11 @@ func (s *scanner) peek() string {
 }
 
 func (s *scanner) peekNext() string {
-	if s.current + 1 >= len(s.source) {
+	if s.current+1 >= len(s.source) {
 		return "\\0"
 	}
 
-	return string(s.source[s.current + 1])
+	return string(s.source[s.current+1])
 }
 
 func (s *scanner) isDigit(c string) bool {
@@ -304,18 +302,18 @@ func (s *scanner) advance() byte {
 func (s *scanner) addToken(tokentype int, literal *interface{}) {
 	text := s.source[s.start:s.current]
 
-    if s.Tokens == nil && literal == nil {
-        tSlice := []token.Token{*token.NewToken(tokentype, text, nil, s.line)}
-        s.Tokens = &tSlice
-    } else if s.Tokens == nil && literal != nil {
-        tSlice := []token.Token{*token.NewToken(tokentype, text, literal, s.line)}
-        s.Tokens = &tSlice
-    } else if literal == nil {
-        tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, nil, s.line))
+	if s.Tokens == nil && literal == nil {
+		tSlice := []token.Token{*token.NewToken(tokentype, text, nil, s.line)}
+		s.Tokens = &tSlice
+	} else if s.Tokens == nil && literal != nil {
+		tSlice := []token.Token{*token.NewToken(tokentype, text, literal, s.line)}
+		s.Tokens = &tSlice
+	} else if literal == nil {
+		tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, nil, s.line))
 		s.Tokens = &tSlice
 	} else {
-        tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, literal, s.line))
-        s.Tokens = &tSlice
-    }
+		tSlice := append(*s.Tokens, *token.NewToken(tokentype, text, literal, s.line))
+		s.Tokens = &tSlice
+	}
 
 }

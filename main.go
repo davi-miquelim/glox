@@ -1,21 +1,20 @@
 package main
 
 import (
-    "fmt"
-    "os"
-    "glox/lox"
+	"fmt"
+	"glox/lox"
+	"os"
 )
 
-
 func main() {
-    args := os.Args[1:]
-    
-    if len(args) > 1 {
-        fmt.Println("Usage: glox [script]") 
-        os.Exit(64)
-    } else if len(args) == 1 {
-        lox.RunFile(args[0])
-    } else {
-        lox.RunPrompt()
-    }
+	args := os.Args[1:]
+
+	if len(args) > 1 {
+		fmt.Println("Usage: glox [script]")
+		os.Exit(64)
+	} else if len(args) == 1 {
+		lox.RunFile(args[0])
+	} else {
+		lox.RunPrompt()
+	}
 }
