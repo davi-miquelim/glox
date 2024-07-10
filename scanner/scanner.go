@@ -126,13 +126,7 @@ func (s *scanner) scanToken() {
 		}
 
 		if s.match("*") == true {
-			for s.isAtEnd() == false && s.peek() + s.peekNext() != "*/" {
-                if s.peek() == "\n" {
-                    s.line++
-                }
-
-				s.advance()
-			}
+            s.blockComment()
 			break
 		}
 
@@ -209,7 +203,7 @@ func (s *scanner) number() {
 }
 
 func (s *scanner) str() {
-	for s.peek() != "\"" && s.isAtEnd() == false {
+	for s.isAtEnd() == false && s.peek() != "\"" {
 		if s.peek() == "\n" {
 			s.line++
 		}
@@ -226,6 +220,36 @@ func (s *scanner) str() {
 	value := s.source[s.start+1 : s.current-1]
 	var iValue interface{} = value
 	s.addToken(token.String, &iValue)
+}
+
+func (s *scanner) blockComment() {
+    openCount := 1
+
+    for s.isAtEnd() && openCount > 0 {
+        if s.peek() == "\n" {
+            s.line++
+        }
+
+        isOpenComment := (s.peek() + s.peekNext()) == "/*"
+        if isOpenComment {
+            openCount++
+        }
+
+
+        isCloseComment := (s.peek() + s.peekNext()) == "*/"
+        if isCloseComment  {
+            openCount--
+        }
+
+        s.advance()
+    }
+
+    if s.isAtEnd() && openCount > 0 {
+        s.Error(s.line, nil, "Unterminated comment")
+        return
+    }
+
+    s.advance()
 }
 
 func (s *scanner) match(expected string) bool {
