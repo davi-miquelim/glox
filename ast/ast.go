@@ -2,66 +2,66 @@ package ast
 
 import "glox/token"
 
-type visitor interface {
-    visitorForGrouping(grouping)
-    visitorForLiteral(literal)
-    visitorForBinary(binary)
-    visitorForUnary(unary)
+type Visitor interface {
+    VisitorForGrouping(Grouping)
+    VisitorForLiteral(Literal)
+    VisitorForBinary(Binary)
+    VisitorForUnary(Unary)
 }
 
-type expression struct {
-    *literal
-    *grouping
-    *binary
+type Expression struct {
+    *Literal
+    *Grouping
+    *Binary
 }
 
-type literal struct {
+type Literal struct {
 	value interface{}
 }
 
-func (obj *literal) accept(v visitor) {
+func (obj *Literal) accept(v Visitor) {
     if obj == nil {
-        panic("nil literal")
+        panic("nil Literal")
     }
 
-    v.visitorForLiteral(*obj)
+    v.VisitorForLiteral(*obj)
 }
 
-type grouping struct {
-	expression
+type Grouping struct {
+	Expression
 }
 
-func (obj *grouping) accept(v visitor) {
+func (obj *Grouping) accept(v Visitor) {
     if obj == nil {
-        panic("nil grouping")
+        panic("nil Grouping")
     }
 
-    v.visitorForGrouping(*obj)
+    v.VisitorForGrouping(*obj)
 }
 
-type binary struct {
-	left     expression
-	right    expression
+type Binary struct {
+	left     Expression
+	right    Expression
 	operator token.Token
 }
 
-func (obj *binary) accept(v visitor) {
+func (obj *Binary) accept(v Visitor) {
     if obj == nil {
-        panic("nil grouping")
+        panic("nil Grouping")
     }
 
-    v.visitorForBinary(*obj)
+    v.VisitorForBinary(*obj)
 }
 
-type unary struct {
-	right     expression
+type Unary struct {
+	right     Expression
 	operator token.Token
 }
 
-func (obj *unary) accept(v visitor) {
+func (obj *Unary) accept(v Visitor) {
     if obj == nil {
-        panic("nil grouping")
+        panic("nil Grouping")
     }
 
-    v.visitorForUnary(*obj)
+    v.VisitorForUnary(*obj)
 }
