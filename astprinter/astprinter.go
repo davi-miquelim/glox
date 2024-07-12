@@ -6,11 +6,11 @@ import (
 	"strings"
 )
 
-func visitBinary(expr ast.Binary) {
+func visitBinary(expr ast.Binary) string {
     return parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right)
 }
 
-func visitGroupingExpr(expr ast.Grouping) {
+func visitGroupingExpr(expr ast.Grouping) string {
     return parenthesize("group", expr.Expression)
 }
 
@@ -23,11 +23,11 @@ func visitLiteralExpr(expr ast.Literal) string {
     return strVal
 }
 
-func visitUnaryExpr(expr ast.Unary) {
+func visitUnaryExpr(expr ast.Unary) string {
     return parenthesize(expr.Operator.Lexeme, expr.Right)
 }
 
-func parenthesize(name string, exprs ...ast.Visitor{}) {
+func parenthesize(name string, exprs ...ast.Expression) string {
     var builder strings.Builder
 
     builder.WriteByte('(')
