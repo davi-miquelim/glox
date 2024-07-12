@@ -34,7 +34,7 @@ func parenthesize(name string, exprs ...ast.Expression) string {
     builder.WriteString(name)
     for _, expr := range exprs {
         builder.WriteByte(' ')
-        builder.WriteString(expr.accept())
+        builder.WriteString(expr.Accept())
     }
 
     return builder.String()
