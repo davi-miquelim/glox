@@ -16,7 +16,7 @@ type Expression struct {
 }
 
 type Literal struct {
-	value interface{}
+	Value interface{}
 }
 
 func (obj *Literal) accept(v Visitor) {
@@ -40,9 +40,9 @@ func (obj *Grouping) accept(v Visitor) {
 }
 
 type Binary struct {
-	left     Expression
-	right    Expression
-	operator token.Token
+	Left     Expression
+	Right    Expression
+	Operator token.Token
 }
 
 func (obj *Binary) accept(v Visitor) {
@@ -54,8 +54,8 @@ func (obj *Binary) accept(v Visitor) {
 }
 
 type Unary struct {
-	right     Expression
-	operator token.Token
+	Right     Expression
+	Operator token.Token
 }
 
 func (obj *Unary) accept(v Visitor) {
