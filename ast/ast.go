@@ -3,6 +3,9 @@ package ast
 import "glox/token"
 
 type expression struct {
+    *literal
+    *grouping
+    *binary
 }
 
 type literal struct {
@@ -11,8 +14,6 @@ type literal struct {
 
 type grouping struct {
 	expression
-    left token.Token
-    right token.Token
 }
 
 type binary struct {
