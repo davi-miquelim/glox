@@ -47,7 +47,7 @@ type Binary struct {
 
 func (obj *Binary) accept(v Visitor) {
     if obj == nil {
-        panic("nil Grouping")
+        panic("nil Binary")
     }
 
     v.VisitorForBinary(*obj)
@@ -60,7 +60,7 @@ type Unary struct {
 
 func (obj *Unary) accept(v Visitor) {
     if obj == nil {
-        panic("nil Grouping")
+        panic("nil Unary")
     }
 
     v.VisitorForUnary(*obj)
