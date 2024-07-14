@@ -49,6 +49,7 @@ func (ast *astPrinter) parenthesize(name string, exprs ...ast.Expression) interf
 		strVal := fmt.Sprintf("%v", val)
 		builder.WriteString(strVal)
 	}
+    builder.WriteByte(')')
 
 	return builder.String()
 }
