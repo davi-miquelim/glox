@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestAstPrinter(t *testing.T) string  {
+func TestAstPrinter(t *testing.T) {
     minusToken := token.NewToken(token.Minus, "-", nil, 1)
     minusLiteral := minusToken.Literal
     unary := ast.Unary{Right: ast.Expression{Literal: &ast.Literal{Value: minusLiteral}}}
@@ -19,6 +19,4 @@ func TestAstPrinter(t *testing.T) string  {
  
     printer := astprinter.NewPrettyPrinter()
     fmt.Println(printer.VisitForBinary(&binary))
-
-    return "foo"
 }
