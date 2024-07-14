@@ -19,20 +19,18 @@ type Expression struct {
     *Unary
 }
 
-func (obj *Expression) Accept(v Visitor) (error) {
+func (obj *Expression) Accept(v Visitor) (interface{}, error) {
     if obj.Literal != nil {
-        v.VisitForLiteral(obj.Literal)
+        return v.VisitForLiteral(obj.Literal), nil
     } else if obj.Grouping != nil {
-        v.VisitForGrouping(obj.Grouping)
+        return v.VisitForGrouping(obj.Grouping), nil
     } else if obj.Binary != nil {
-        v.VisitForBinary(obj.Binary)
+        return v.VisitForBinary(obj.Binary), nil
     } else if obj.Unary != nil {
-        v.VisitForUnary(obj.Unary)
+        return v.VisitForUnary(obj.Unary), nil
     } else {
-        return errors.New("nil expression")
+        return nil, errors.New("nil expression")
     }
-
-    return nil
 }
 
 

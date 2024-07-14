@@ -36,13 +36,14 @@ func (ast *AstPrinter) parenthesize(name string, exprs ...ast.Expression) interf
     builder.WriteString(name)
     for _, expr := range exprs {
         builder.WriteByte(' ')
-        err := expr.Accept(ast)
+        val, err := expr.Accept(ast)
 
         if err != nil {
             panic(err)
         }
 
-        // builder.WriteString(expr.Accept(ast))
+        strVal := fmt.Sprintf("%v", val)
+        builder.WriteString(strVal)
     }
 
     return builder.String()
