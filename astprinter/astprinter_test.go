@@ -18,5 +18,9 @@ func TestAstPrinter(t *testing.T) {
     binary := ast.Binary{Left: ast.Expression{Unary: &unary}, Operator: *star, Right: ast.Expression{Grouping: &grouping}}
  
     printer := astprinter.NewPrettyPrinter()
-    fmt.Println(printer.VisitForBinary(&binary))
+    res := fmt.Sprintf("%s", printer.VisitForBinary(&binary))
+
+    if res != "(* (-123) (group 45.67))" {
+        t.Errorf("AstPrinter = %s; want (* (-123) (group 45.67))", res)
+    }
 }
