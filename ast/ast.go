@@ -23,20 +23,6 @@ type Expression struct {
 	*Unary
 }
 
-
-func NewExpression(expr Expression) *Expression {
-    if expr.Literal != nil {
-        return &Expression{Literal: expr.Literal}
-    } else if expr.Grouping != nil {
-        return &Expression{Grouping: expr.Grouping}
-    } else if expr.Binary != nil {
-        return &Expression{Binary: expr.Binary}
-    } else {
-        return &Expression{Unary: expr.Unary}
-    }
-}
-
-
 func (obj *Expression) Accept(v Visitor) (interface{}, error) {
 	if obj.Literal != nil {
 		return v.VisitForLiteral(obj.Literal), nil
@@ -89,7 +75,7 @@ type Binary struct {
 	Operator token.Token
 }
 
-func NewBinary(left Expression, right Expression, operator token.Token) *Binary {
+func NewBinary(left Expression, operator token.Token, right Expression) *Binary {
     return &Binary{Left: left, Right: right, Operator: operator}
 }
 
@@ -106,7 +92,7 @@ type Unary struct {
 	Operator token.Token
 }
 
-func NewUnary(right Expression, operator token.Token) *Unary {
+func NewUnary(operator token.Token, right Expression) *Unary {
     return &Unary{Right: right, Operator: operator}
 }
 
