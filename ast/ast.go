@@ -72,7 +72,7 @@ func (obj *Binary) Accept(v Visitor) {
 }
 
 type Unary struct {
-	Right    Expression
+	Right     Expression
 	Operator token.Token
 }
 
