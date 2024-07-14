@@ -6,15 +6,17 @@ import (
 	"strings"
 )
 
-func visitBinary(expr ast.Binary) string {
-    return parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right)
+type AstPrinter struct {}
+
+func (ast *AstPrinter) VisitForBinary(expr *ast.Binary) interface{} {
+    return ast.parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right)
 }
 
-func visitGroupingExpr(expr ast.Grouping) string {
-    return parenthesize("group", expr.Expression)
+func (ast *AstPrinter) VisitForGrouping(expr *ast.Grouping) interface{} {
+    return ast.parenthesize("group", expr.Expression)
 }
 
-func visitLiteralExpr(expr ast.Literal) string {
+func (ast *AstPrinter) VisitForLiteral(expr *ast.Literal) interface{} {
     if expr.Value == nil {
         return "nil"
     }
@@ -23,18 +25,24 @@ func visitLiteralExpr(expr ast.Literal) string {
     return strVal
 }
 
-func visitUnaryExpr(expr ast.Unary) string {
-    return parenthesize(expr.Operator.Lexeme, expr.Right)
+func (ast *AstPrinter) VisitForUnary(expr *ast.Unary) interface{} {
+    return ast.parenthesize(expr.Operator.Lexeme, expr.Right)
 }
 
-func parenthesize(name string, exprs ...ast.Expression) string {
+func (ast *AstPrinter) parenthesize(name string, exprs ...ast.Expression) interface{} {
     var builder strings.Builder
 
     builder.WriteByte('(')
     builder.WriteString(name)
     for _, expr := range exprs {
         builder.WriteByte(' ')
-        builder.WriteString(expr.Accept())
+        err := expr.Accept(ast)
+
+        if err != nil {
+            panic(err)
+        }
+
+        // builder.WriteString(expr.Accept(ast))
     }
 
     return builder.String()

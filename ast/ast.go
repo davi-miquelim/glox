@@ -6,10 +6,10 @@ import (
 )
 
 type Visitor interface {
-    VisitorForGrouping(Grouping)
-    VisitorForLiteral(Literal)
-    VisitorForBinary(Binary)
-    VisitorForUnary(Unary)
+    VisitForGrouping(*Grouping) interface{}
+    VisitForLiteral(*Literal) interface{}
+    VisitForBinary(*Binary) interface{}
+    VisitForUnary(*Unary) interface{} 
 }
 
 type Expression struct {
@@ -21,13 +21,13 @@ type Expression struct {
 
 func (obj *Expression) Accept(v Visitor) (error) {
     if obj.Literal != nil {
-        v.VisitorForLiteral(*obj.Literal)
+        v.VisitForLiteral(obj.Literal)
     } else if obj.Grouping != nil {
-        v.VisitorForGrouping(*obj.Grouping)
+        v.VisitForGrouping(obj.Grouping)
     } else if obj.Binary != nil {
-        v.VisitorForBinary(*obj.Binary)
+        v.VisitForBinary(obj.Binary)
     } else if obj.Unary != nil {
-        v.VisitorForUnary(*obj.Unary)
+        v.VisitForUnary(obj.Unary)
     } else {
         return errors.New("nil expression")
     }
@@ -45,7 +45,7 @@ func (obj *Literal) Accept(v Visitor) {
         panic("nil Literal")
     }
 
-    v.VisitorForLiteral(*obj)
+    v.VisitForLiteral(obj)
 }
 
 type Grouping struct {
@@ -57,11 +57,11 @@ func (obj *Grouping) Accept(v Visitor) {
         panic("nil Grouping")
     }
 
-    v.VisitorForGrouping(*obj)
+    v.VisitForGrouping(obj)
 }
 
 type Binary struct {
-	Left     Expression
+    Left     Expression
 	Right    Expression
 	Operator token.Token
 }
@@ -71,7 +71,7 @@ func (obj *Binary) Accept(v Visitor) {
         panic("nil Binary")
     }
 
-    v.VisitorForBinary(*obj)
+    v.VisitForBinary(obj)
 }
 
 type Unary struct {
@@ -84,5 +84,5 @@ func (obj *Unary) Accept(v Visitor) {
         panic("nil Unary")
     }
 
-    v.VisitorForUnary(*obj)
+    v.VisitForUnary(obj)
 }
