@@ -6,17 +6,21 @@ import (
 	"strings"
 )
 
-type AstPrinter struct{}
+type astPrinter struct{}
 
-func (ast *AstPrinter) VisitForBinary(expr *ast.Binary) interface{} {
+func NewPrettyPrinter() *astPrinter {
+    return &astPrinter{}
+}
+
+func (ast *astPrinter) VisitForBinary(expr *ast.Binary) interface{} {
 	return ast.parenthesize(expr.Operator.Lexeme, expr.Left, expr.Right)
 }
 
-func (ast *AstPrinter) VisitForGrouping(expr *ast.Grouping) interface{} {
+func (ast *astPrinter) VisitForGrouping(expr *ast.Grouping) interface{} {
 	return ast.parenthesize("group", expr.Expression)
 }
 
-func (ast *AstPrinter) VisitForLiteral(expr *ast.Literal) interface{} {
+func (ast *astPrinter) VisitForLiteral(expr *ast.Literal) interface{} {
 	if expr.Value == nil {
 		return "nil"
 	}
@@ -25,11 +29,11 @@ func (ast *AstPrinter) VisitForLiteral(expr *ast.Literal) interface{} {
 	return strVal
 }
 
-func (ast *AstPrinter) VisitForUnary(expr *ast.Unary) interface{} {
+func (ast *astPrinter) VisitForUnary(expr *ast.Unary) interface{} {
 	return ast.parenthesize(expr.Operator.Lexeme, expr.Right)
 }
 
-func (ast *AstPrinter) parenthesize(name string, exprs ...ast.Expression) interface{} {
+func (ast *astPrinter) parenthesize(name string, exprs ...ast.Expression) interface{} {
 	var builder strings.Builder
 
 	builder.WriteByte('(')
