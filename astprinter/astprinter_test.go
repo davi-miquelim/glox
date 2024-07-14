@@ -10,8 +10,10 @@ import (
 
 func TestAstPrinter(t *testing.T) {
     minusToken := token.NewToken(token.Minus, "-", nil, 1)
-    minusLiteral := minusToken.Literal
-    unary := ast.Unary{Right: ast.Expression{Literal: &ast.Literal{Value: minusLiteral}}}
+    minusLexeme := minusToken.Lexeme
+    var iInt interface{} = 123
+    intToken := token.NewToken(token.Number, "123", &iInt, 1)
+    unary := ast.Unary{Right: ast.Expression{Literal: &ast.Literal{Value: minusLexeme}}, Operator: *intToken }
     star := token.NewToken(token.Star, "*", nil, 1)
     literal := ast.Literal{Value: 45.67}
     grouping := ast.Grouping{Expression: ast.Expression{Literal: &literal}}
