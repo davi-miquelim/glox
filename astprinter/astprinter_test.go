@@ -1,10 +1,11 @@
 package astprinter_test
 
 import (
+	"fmt"
 	"glox/ast"
+	"glox/astprinter"
 	"glox/token"
 	"testing"
-    "glox/astprinter"
 )
 
 func TestAstPrinter(t *testing.T) string  {
@@ -14,9 +15,10 @@ func TestAstPrinter(t *testing.T) string  {
     star := token.NewToken(token.Star, "*", nil, 1)
     literal := ast.Literal{Value: 45.67}
     grouping := ast.Grouping{Expression: ast.Expression{Literal: &literal}}
-    expr := ast.Binary{Left: ast.Expression{Unary: &unary}, Operator: *star, Right: ast.Expression{Grouping: &grouping}}
+    binary := ast.Binary{Left: ast.Expression{Unary: &unary}, Operator: *star, Right: ast.Expression{Grouping: &grouping}}
  
     printer := astprinter.NewPrettyPrinter()
+    fmt.Println(printer.VisitForBinary(&binary))
 
     return "foo"
 }
