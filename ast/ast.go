@@ -12,12 +12,30 @@ type Visitor interface {
 	VisitForUnary(*Unary) interface{}
 }
 
+type derivations interface {
+    *Literal | *Grouping | *Binary | *Unary
+}
+
 type Expression struct {
 	*Literal
 	*Grouping
 	*Binary
 	*Unary
 }
+
+
+func NewExpression(expr Expression) *Expression {
+    if expr.Literal != nil {
+        return &Expression{Literal: expr.Literal}
+    } else if expr.Grouping != nil {
+        return &Expression{Grouping: expr.Grouping}
+    } else if expr.Binary != nil {
+        return &Expression{Binary: expr.Binary}
+    } else {
+        return &Expression{Unary: expr.Unary}
+    }
+}
+
 
 func (obj *Expression) Accept(v Visitor) (interface{}, error) {
 	if obj.Literal != nil {
@@ -37,6 +55,10 @@ type Literal struct {
 	Value interface{}
 }
 
+func NewLiteral(value interface{}) *Literal {
+    return &Literal{Value: value}
+}
+
 func (obj *Literal) Accept(v Visitor) {
 	if obj == nil {
 		panic("nil Literal")
@@ -47,6 +69,10 @@ func (obj *Literal) Accept(v Visitor) {
 
 type Grouping struct {
 	Expression
+}
+
+func NewGrouping(expr Expression) *Grouping {
+    return &Grouping{Expression: expr}
 }
 
 func (obj *Grouping) Accept(v Visitor) {
@@ -63,6 +89,10 @@ type Binary struct {
 	Operator token.Token
 }
 
+func NewBinary(left Expression, right Expression, operator token.Token) *Binary {
+    return &Binary{Left: left, Right: right, Operator: operator}
+}
+
 func (obj *Binary) Accept(v Visitor) {
 	if obj == nil {
 		panic("nil Binary")
@@ -74,6 +104,10 @@ func (obj *Binary) Accept(v Visitor) {
 type Unary struct {
 	Right     Expression
 	Operator token.Token
+}
+
+func NewUnary(right Expression, operator token.Token) *Unary {
+    return &Unary{Right: right, Operator: operator}
 }
 
 func (obj *Unary) Accept(v Visitor) {
