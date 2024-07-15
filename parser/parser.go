@@ -7,6 +7,10 @@ import (
 	"glox/token"
 )
 
+
+type parserError struct {}
+ 
+
 type parser struct {
     tokens []token.Token
     current int
@@ -116,7 +120,7 @@ func (p *parser) consume(tknType int, message string) (*token.Token, error) {
     return nil, fmt.Errorf("%v %s",currentToken, message)
 }
 
-func (p *parser) error(tkn token.Token, message string) {
+func (p *parser) error(tkn token.Token, message string) *parserError {
     if tkn.TokenType == token.Eof {
         where := " at end"
         lox.Error(tkn.Line, &where, message)
@@ -125,7 +129,7 @@ func (p *parser) error(tkn token.Token, message string) {
         lox.Error(tkn.Line, &where, message)
     }
 
-    return p.NewParseError()
+    return newParserError()
 }
 
 func (p *parser) check(tknType int) bool {
@@ -164,4 +168,10 @@ func (p *parser) previous() token.Token {
 func NewParser(tokens []token.Token) *parser {
     return &parser{tokens: tokens, current: 0}
 }
+
+func newParserError() *parserError {
+    return &parserError{}
+}
+
+
 
