@@ -116,8 +116,8 @@ func (p *parser) consume(tknType int, message string) (*token.Token, error) {
         return &advance, nil
     }
 
-    currentToken := p.peek()
-    return nil, fmt.Errorf("%v %s",currentToken, message)
+    currentTkn := p.peek()
+    return nil, fmt.Errorf("%w", p.error(currentTkn, message))
 }
 
 func (p *parser) error(tkn token.Token, message string) *parserError {
