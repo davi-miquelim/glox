@@ -132,6 +132,28 @@ func (p *parser) error(tkn token.Token, message string) *parserError {
     return newParserError()
 }
 
+func (p *parser) synchronize() {
+    p.advance()
+    for p.isAtEnd() == false {
+        if p.previous().TokenType == token.SemiColon {
+            return
+        }
+
+        switch p.peek().TokenType {
+        case token.Class:
+        case token.For:
+        case token.Fun:
+        case token.If:
+        case token.Print:
+        case token.Return:
+        case token.Var:
+        case token.While:
+        }
+
+        p.advance()
+    }
+}
+
 func (p *parser) check(tknType int) bool {
     if p.isAtEnd() == true {
         return false
