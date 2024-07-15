@@ -1,8 +1,10 @@
 package parser
 
 import (
-	"glox/token"
+	"fmt"
 	"glox/ast"
+	"glox/lox"
+	"glox/token"
 )
 
 type parser struct {
@@ -93,8 +95,8 @@ func (p *parser) primary() interface{} {
     return nil
 }
 
-func (p *parser) match(tokenTypes ...int) bool {
-    for _, tt := range tokenTypes {
+func (p *parser) match(tknTypes ...int) bool {
+    for _, tt := range tknTypes {
         if p.check(tt) == true {
             p.advance()
             return true
@@ -104,12 +106,27 @@ func (p *parser) match(tokenTypes ...int) bool {
     return false
 }
 
-func (p *parser) check(tokenType int) bool {
+func (p *parser) consume(tknType int, message string) (*token.Token, error) {
+    if p.check(tknType) {
+        advance := p.advance()
+        return &advance, nil
+    }
+
+    currentToken := p.peek()
+    return nil, fmt.Errorf("%v %s",currentToken, message)
+}
+
+func (p *parser) error(tkn token.Token, message string) {
+    lox.Error(tkn.Line, message)
+    return p.NewParseError()
+}
+
+func (p *parser) check(tknType int) bool {
     if p.isAtEnd() == true {
         return false
     }
 
-    return p.peek().TokenType == tokenType
+    return p.peek().TokenType == tknType
 }
 
 func (p *parser) advance() token.Token {

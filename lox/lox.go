@@ -48,8 +48,8 @@ func run(source string) {
 	}
 }
 
-func Error(line int, message string) {
-	report(line, nil, message)
+func Error(line int, where *string, message string) {
+	report(line, where, message)
 }
 
 func report(line int, where *string, message string) {
