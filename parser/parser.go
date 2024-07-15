@@ -10,11 +10,11 @@ type parser struct {
     current int
 } 
 
-func (p *parser) expresion() interface{} {
+func (p *parser) expresion()  ast.Binary {
     return p.equality()
 }
 
-func (p *parser) equality() {
+func (p *parser) equality() ast.Binary {
     expr := p.comparison()
     for p.match(token.BangEqual, token.EqualEqual) {
         operator := p.previous()
@@ -23,6 +23,74 @@ func (p *parser) equality() {
     }
 
     return expr
+}
+
+func (p *parser) comparison() ast.Binary {
+    expr := p.term()
+
+    for p.match(token.Greater, token.GreaterEqual, token.Less, token.LessEqual) {
+        operator := p.previous()
+        right := p.term()
+        expr = ast.NewBinary(expr, operator, right)
+    } 
+
+    return expr
+}
+
+func (p *parser) term() ast.Binary {
+    expr := p.factor()
+
+    for p.match(token.Minus, token.Plus) {
+        operator := p.previous()
+        right := p.factor()
+        expr = ast.NewBinary(expr, operator, right)
+    } 
+
+    return expr
+}
+
+func (p *parser) factor() ast.Binary {
+    expr := p.unary()
+
+    for p.match(token.Slash, token.Star) {
+        operator := p.previous()
+        right := p.unary()
+        expr = ast.NewBinary(expr, operator, right)
+    } 
+
+    return expr
+}
+
+func (p *parser) unary() ast.Unary {
+    for p.match(token.Bang, token.Minus) {
+        operator := p.previous()
+        right := p.unary()
+        return *ast.NewUnary(operator, right)
+    } 
+
+    return p.primary()
+}
+
+func (p *parser) primary() interface{} {
+    if p.match(token.False) {
+        return *ast.NewLiteral(false)
+    }
+    if p.match(token.True) {
+        return *ast.NewLiteral(true)
+    }
+    if p.match(token.Null) {
+        return *ast.NewLiteral(nil)
+    }
+    if p.match(token.Number, token.String) {
+        return *ast.NewLiteral(p.previous().Literal)
+    }
+    if p.match(token.LeftParen) {
+        expr := p.expresion()
+        p.consume(token.RightParen, "Expect ')' after expression. ")
+        return *ast.NewGrouping(expr)
+    }
+
+    return nil
 }
 
 func (p *parser) match(tokenTypes ...int) bool {
