@@ -16,87 +16,102 @@ type parser struct {
     current int
 } 
 
-func (p *parser) expresion()  ast.Binary {
+func (p *parser) expresion() ast.Expression {
     return p.equality()
 }
 
-func (p *parser) equality() ast.Binary {
+func (p *parser) equality() ast.Expression {
     expr := p.comparison()
     for p.match(token.BangEqual, token.EqualEqual) {
         operator := p.previous()
         right := p.comparison()
-        expr = ast.NewBinary(expr, operator, right)
+        expr = ast.Expression{Binary: ast.NewBinary(expr, operator, right)}
     }
 
     return expr
 }
 
-func (p *parser) comparison() ast.Binary {
+func (p *parser) comparison() ast.Expression {
     expr := p.term()
 
     for p.match(token.Greater, token.GreaterEqual, token.Less, token.LessEqual) {
         operator := p.previous()
         right := p.term()
-        expr = ast.NewBinary(expr, operator, right)
+        expr = ast.Expression{Binary: ast.NewBinary(expr, operator, right)}
     } 
 
     return expr
 }
 
-func (p *parser) term() ast.Binary {
+func (p *parser) term() ast.Expression {
     expr := p.factor()
 
     for p.match(token.Minus, token.Plus) {
         operator := p.previous()
         right := p.factor()
-        expr = ast.NewBinary(expr, operator, right)
+        expr = ast.Expression{Binary: ast.NewBinary(expr, operator, right)}
     } 
 
     return expr
 }
 
-func (p *parser) factor() ast.Binary {
+func (p *parser) factor() ast.Expression {
     expr := p.unary()
 
     for p.match(token.Slash, token.Star) {
         operator := p.previous()
         right := p.unary()
-        expr = ast.NewBinary(expr, operator, right)
+        expr = ast.Expression{Binary: ast.NewBinary(expr, operator, right)}
     } 
 
     return expr
 }
 
-func (p *parser) unary() ast.Unary {
+func (p *parser) unary() (ast.Expression) {
     for p.match(token.Bang, token.Minus) {
         operator := p.previous()
-        right := p.unary()
-        return *ast.NewUnary(operator, right)
+        right, err := p.primary()
+        if err != nil {
+            panic(err)
+        }
+
+        unary :=  ast.NewUnary(operator, ast.Expression{Literal: right.Literal}) 
+        return ast.Expression{Unary: unary} 
     } 
 
-    return p.primary()
+    primary, err := p.primary()
+    if err != nil {
+        panic(err)
+    }
+
+    return primary
 }
 
-func (p *parser) primary() interface{} {
+func (p *parser) primary() (ast.Expression, error) {
     if p.match(token.False) {
-        return *ast.NewLiteral(false)
+        literal := *ast.NewLiteral(false)
+        return ast.Expression{Literal: &literal}, nil 
     }
     if p.match(token.True) {
-        return *ast.NewLiteral(true)
+        literal := *ast.NewLiteral(true)
+        return ast.Expression{Literal: &literal}, nil 
     }
     if p.match(token.Null) {
-        return *ast.NewLiteral(nil)
+        literal := *ast.NewLiteral(nil)
+        return ast.Expression{Literal: &literal}, nil 
     }
     if p.match(token.Number, token.String) {
-        return *ast.NewLiteral(p.previous().Literal)
+        literal := *ast.NewLiteral(p.previous().Literal)
+        return ast.Expression{Literal: &literal}, nil
     }
     if p.match(token.LeftParen) {
         expr := p.expresion()
         p.consume(token.RightParen, "Expect ')' after expression. ")
-        return *ast.NewGrouping(expr)
+        grouping := *ast.NewGrouping(ast.Expression{Binary: &expr})
+        return ast.Expression{Grouping: &grouping}, nil
     }
 
-    return nil
+    return ast.Expression{}, fmt.Errorf("%w", p.error(p.peek(), "Expected expression."))
 }
 
 func (p *parser) match(tknTypes ...int) bool {
