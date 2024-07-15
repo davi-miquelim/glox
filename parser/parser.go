@@ -117,7 +117,14 @@ func (p *parser) consume(tknType int, message string) (*token.Token, error) {
 }
 
 func (p *parser) error(tkn token.Token, message string) {
-    lox.Error(tkn.Line, message)
+    if tkn.TokenType == token.Eof {
+        where := " at end"
+        lox.Error(tkn.Line, &where, message)
+    } else {
+        where := fmt.Sprintf("at '%s' %s", tkn.Lexeme, message)
+        lox.Error(tkn.Line, &where, message)
+    }
+
     return p.NewParseError()
 }
 
