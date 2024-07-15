@@ -16,6 +16,10 @@ type parser struct {
     current int
 } 
 
+func (p *parser) Parse() ast.Expression {
+    return p.expresion()
+}
+
 func (p *parser) expresion() ast.Expression {
     return p.equality()
 }
