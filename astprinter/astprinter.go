@@ -9,7 +9,7 @@ import (
 type astPrinter struct{}
 
 func NewPrettyPrinter() *astPrinter {
-    return &astPrinter{}
+	return &astPrinter{}
 }
 
 func (ast *astPrinter) VisitForBinary(expr *ast.Binary) interface{} {
@@ -49,7 +49,7 @@ func (ast *astPrinter) parenthesize(name string, exprs ...ast.Expression) interf
 		strVal := fmt.Sprintf("%v", val)
 		builder.WriteString(strVal)
 	}
-    builder.WriteByte(')')
+	builder.WriteByte(')')
 
 	return builder.String()
 }

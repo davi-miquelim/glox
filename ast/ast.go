@@ -13,7 +13,7 @@ type Visitor interface {
 }
 
 type derivations interface {
-    *Literal | *Grouping | *Binary | *Unary
+	*Literal | *Grouping | *Binary | *Unary
 }
 
 type Expression struct {
@@ -42,7 +42,7 @@ type Literal struct {
 }
 
 func NewLiteral(value interface{}) *Literal {
-    return &Literal{Value: value}
+	return &Literal{Value: value}
 }
 
 func (obj *Literal) Accept(v Visitor) {
@@ -58,7 +58,7 @@ type Grouping struct {
 }
 
 func NewGrouping(expr Expression) *Grouping {
-    return &Grouping{Expression: expr}
+	return &Grouping{Expression: expr}
 }
 
 func (obj *Grouping) Accept(v Visitor) {
@@ -76,7 +76,7 @@ type Binary struct {
 }
 
 func NewBinary(left Expression, operator token.Token, right Expression) *Binary {
-    return &Binary{Left: left, Right: right, Operator: operator}
+	return &Binary{Left: left, Right: right, Operator: operator}
 }
 
 func (obj *Binary) Accept(v Visitor) {
@@ -88,12 +88,12 @@ func (obj *Binary) Accept(v Visitor) {
 }
 
 type Unary struct {
-	Right     Expression
+	Right    Expression
 	Operator token.Token
 }
 
 func NewUnary(operator token.Token, right Expression) *Unary {
-    return &Unary{Right: right, Operator: operator}
+	return &Unary{Right: right, Operator: operator}
 }
 
 func (obj *Unary) Accept(v Visitor) {
