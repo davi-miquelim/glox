@@ -107,13 +107,13 @@ func (p *parser) primary() (ast.Expression, error) {
 		return ast.Expression{Literal: &literal}, nil
 	}
 	if p.match(token.LeftParen) {
-		expr := p.expresion()
+		expr := p.expresion().Binary
 		p.consume(token.RightParen, "Expect ')' after expression. ")
-		grouping := *ast.NewGrouping(ast.Expression{Binary: &expr})
+		grouping := *ast.NewGrouping(ast.Expression{Binary: expr})
 		return ast.Expression{Grouping: &grouping}, nil
 	}
 
-	return ast.Expression{}, fmt.Errorf("%w", p.error(p.peek(), "Expected expression."))
+	return ast.Expression{}, fmt.Errorf("%v", p.error(p.peek(), "Expected expression."))
 }
 
 func (p *parser) match(tknTypes ...int) bool {
@@ -134,7 +134,7 @@ func (p *parser) consume(tknType int, message string) (*token.Token, error) {
 	}
 
 	currentTkn := p.peek()
-	return nil, fmt.Errorf("%w", p.error(currentTkn, message))
+	return nil, fmt.Errorf("%v", p.error(currentTkn, message))
 }
 
 func (p *parser) error(tkn token.Token, message string) *parserError {
