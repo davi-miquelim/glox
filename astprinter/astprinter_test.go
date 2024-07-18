@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestAstPrinter(t *testing.T) {
+func TestAst(t *testing.T) {
 	minusToken := token.NewToken(token.Minus, "-", nil, 1)
 	var iInt interface{} = 123
 	intToken := token.NewToken(token.Number, "123", &iInt, 1)

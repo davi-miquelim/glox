@@ -3,6 +3,7 @@ package lox
 import (
 	"bufio"
 	"fmt"
+	"glox/parser"
 	"glox/scanner"
 	"os"
 )
@@ -41,15 +42,17 @@ func RunPrompt() {
 
 func run(source string) {
 	lexer := scanner.NewScanner(source, nil)
-	lexer.ScanTokens()
-
+    tokens := lexer.ScanTokens()
 	if lexer.HadError == true {
 		hadError = true
 	}
+
+    loxParser := parser.NewParser(tokens)
+    loxParser.Parse()
 }
 
 func Error(line int, where *string, message string) {
-	report(line, where, message)
+	report(line, nil, message)
 }
 
 func report(line int, where *string, message string) {
