@@ -69,6 +69,7 @@ func (p *parser) factor() ast.Expression {
 	return expr
 }
 
+
 func (p *parser) unary() ast.Expression {
 	for p.match(token.Bang, token.Minus) {
 		operator := p.previous()

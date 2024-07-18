@@ -3,6 +3,7 @@ package lox
 import (
 	"bufio"
 	"fmt"
+	"glox/astprinter"
 	"glox/parser"
 	"glox/scanner"
 	"os"
