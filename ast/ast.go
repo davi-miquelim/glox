@@ -10,10 +10,7 @@ type Visitor interface {
 	VisitForLiteral(*Literal) interface{}
 	VisitForBinary(*Binary) interface{}
 	VisitForUnary(*Unary) interface{}
-}
-
-type derivations interface {
-	*Literal | *Grouping | *Binary | *Unary
+	VisitForComma(*Comma) interface{}
 }
 
 type Expression struct {
@@ -21,6 +18,7 @@ type Expression struct {
 	*Grouping
 	*Binary
 	*Unary
+	*Comma
 }
 
 func (obj *Expression) Accept(v Visitor) (interface{}, error) {
@@ -102,4 +100,20 @@ func (obj *Unary) Accept(v Visitor) {
 	}
 
 	v.VisitForUnary(obj)
+}
+
+type Comma struct {
+	Series   []Expression
+}
+
+func NewComma(series []Expression) *Comma {
+    return &Comma{Series: series}
+}
+
+func (obj *Comma) Accept(v Visitor) {
+    if obj == nil {
+		panic("nil Binary")
+    }
+
+    v.VisitForComma(obj)
 }

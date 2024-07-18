@@ -3,7 +3,6 @@ package parser
 import (
 	"fmt"
 	"glox/ast"
-	"glox/lox"
 	"glox/token"
 )
 
@@ -12,6 +11,7 @@ type parserError struct{}
 type parser struct {
 	tokens  []token.Token
 	current int
+    HadError bool
 }
 
 func (p *parser) Parse() ast.Expression {
@@ -137,16 +137,30 @@ func (p *parser) consume(tknType int, message string) (*token.Token, error) {
 	return nil, fmt.Errorf("%v", p.error(currentTkn, message))
 }
 
+
 func (p *parser) error(tkn token.Token, message string) *parserError {
 	if tkn.TokenType == token.Eof {
 		where := " at end"
-		lox.Error(tkn.Line, &where, message)
+		p.report(tkn.Line, &where, message)
 	} else {
 		where := fmt.Sprintf("at '%s' %s", tkn.Lexeme, message)
-		lox.Error(tkn.Line, &where, message)
+		p.report(tkn.Line, &where, message)
 	}
 
 	return newParserError()
+}
+
+func (p *parser) report(line int, where *string, message string) error {
+	p.HadError = true
+
+	if where == nil {
+		err := fmt.Errorf("[line %d] Error %s", line, message)
+		fmt.Println(err)
+		return nil
+	}
+
+	err := fmt.Errorf("[line %d] Error %s: %s", line, message, *where)
+    return err
 }
 
 func (p *parser) synchronize() {
@@ -205,7 +219,7 @@ func (p *parser) previous() token.Token {
 }
 
 func NewParser(tokens []token.Token) *parser {
-	return &parser{tokens: tokens, current: 0}
+	return &parser{tokens: tokens, current: 0, HadError: false}
 }
 
 func newParserError() *parserError {
