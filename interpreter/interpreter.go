@@ -17,7 +17,7 @@ type runtimeError struct {
     msg string
 }
 
-func (i *interpreter) NewInterpreter() *interpreter {
+func NewInterpreter() *interpreter {
     return &interpreter{HadRuntimeError: false}
 }
 

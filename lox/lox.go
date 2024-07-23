@@ -3,33 +3,38 @@ package lox
 import (
 	"bufio"
 	"fmt"
-	"glox/astprinter"
+	"glox/interpreter"
 	"glox/parser"
 	"glox/scanner"
 	"os"
 )
 
 var hadError = false
+var hadRuntimeError = false
 
 func RunFile(path string) {
 	if hadError == true {
-		os.Exit(65)
 	}
 
 	data, err := os.ReadFile(path)
-
 	if err != nil {
-		panic(err)
+        fmt.Println("Error: Could not read file")
+		os.Exit(2)
 	}
 
 	run(string(data))
+    if hadError == true {
+        os.Exit(65)
+    }
+    if hadRuntimeError == true {
+        os.Exit(70)
+    }
 }
 
 func RunPrompt() {
 	for {
 		scanner := bufio.NewScanner(os.Stdin)
 		fmt.Print("> ")
-
 		didScan := scanner.Scan()
 
 		if didScan == false {
@@ -48,8 +53,18 @@ func run(source string) {
 		hadError = true
 	}
 
+    loxInterpreter := interpreter.NewInterpreter()
     loxParser := parser.NewParser(tokens)
-    loxParser.Parse()
+    exprTree := loxParser.Parse()
+
+    if loxParser.HadError == true {
+        hadError = true
+    }
+
+    loxInterpreter.Interpret(exprTree)
+    if loxInterpreter.HadRuntimeError == true {
+        hadRuntimeError = true
+    }
 }
 
 func Error(line int, where *string, message string) {
