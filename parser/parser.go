@@ -9,9 +9,9 @@ import (
 type parserError struct{}
 
 type parser struct {
-	tokens  []token.Token
-	current int
-    HadError bool
+	tokens   []token.Token
+	current  int
+	HadError bool
 }
 
 func (p *parser) Parse() ast.Expression {
@@ -68,7 +68,6 @@ func (p *parser) factor() ast.Expression {
 
 	return expr
 }
-
 
 func (p *parser) unary() ast.Expression {
 	for p.match(token.Bang, token.Minus) {
@@ -138,7 +137,6 @@ func (p *parser) consume(tknType int, message string) (*token.Token, error) {
 	return nil, fmt.Errorf("%v", p.error(currentTkn, message))
 }
 
-
 func (p *parser) error(tkn token.Token, message string) *parserError {
 	if tkn.TokenType == token.Eof {
 		where := " at end"
@@ -161,7 +159,7 @@ func (p *parser) report(line int, where *string, message string) error {
 	}
 
 	err := fmt.Errorf("[line %d] Error %s: %s", line, message, *where)
-    return err
+	return err
 }
 
 func (p *parser) synchronize() {

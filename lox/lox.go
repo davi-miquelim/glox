@@ -18,17 +18,17 @@ func RunFile(path string) {
 
 	data, err := os.ReadFile(path)
 	if err != nil {
-        fmt.Println("Error: Could not read file")
+		fmt.Println("Error: Could not read file")
 		os.Exit(2)
 	}
 
 	run(string(data))
-    if hadError == true {
-        os.Exit(65)
-    }
-    if hadRuntimeError == true {
-        os.Exit(70)
-    }
+	if hadError == true {
+		os.Exit(65)
+	}
+	if hadRuntimeError == true {
+		os.Exit(70)
+	}
 }
 
 func RunPrompt() {
@@ -48,23 +48,23 @@ func RunPrompt() {
 
 func run(source string) {
 	lexer := scanner.NewScanner(source, nil)
-    tokens := lexer.ScanTokens()
+	tokens := lexer.ScanTokens()
 	if lexer.HadError == true {
 		hadError = true
 	}
 
-    loxInterpreter := interpreter.NewInterpreter()
-    loxParser := parser.NewParser(tokens)
-    exprTree := loxParser.Parse()
+	loxInterpreter := interpreter.NewInterpreter()
+	loxParser := parser.NewParser(tokens)
+	exprTree := loxParser.Parse()
 
-    if loxParser.HadError == true {
-        hadError = true
-    }
+	if loxParser.HadError == true {
+		hadError = true
+	}
 
-    loxInterpreter.Interpret(exprTree)
-    if loxInterpreter.HadRuntimeError == true {
-        hadRuntimeError = true
-    }
+	loxInterpreter.Interpret(exprTree)
+	if loxInterpreter.HadRuntimeError == true {
+		hadRuntimeError = true
+	}
 }
 
 func Error(line int, where *string, message string) {
