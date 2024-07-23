@@ -8,13 +8,53 @@ import (
 	"strings"
 )
 
-type interpreter struct {}
-
-func (i *interpreter) NewInterpreter() *interpreter {
-    return &interpreter{}
+type interpreter struct {
+    HadRuntimeError bool
 }
 
-func (i *interpreter) VisirForLiteral(expr *ast.Literal) interface{} {
+type runtimeError struct {
+    token token.Token
+    msg string
+}
+
+func (i *interpreter) NewInterpreter() *interpreter {
+    return &interpreter{HadRuntimeError: false}
+}
+
+func (i *interpreter) Interpret(expr ast.Expression) {
+    val := i.evaluate(expr)
+    if _, ok := val.(runtimeError); ok == true {
+        i.HadRuntimeError = true
+        err := val.(runtimeError)
+        fmt.Printf("%s\n[line %d]\n", err.msg, err.token.Line)
+    }
+
+    fmt.Println(i.stringify(val))
+}
+
+func (i *interpreter) stringify(obj interface{}) string {
+    switch v := obj.(type) {
+    case nil:
+        return "null"
+    case float64:
+        txt := strconv.FormatFloat(v, 'E', -1, 64)
+        if txt[len(txt) - 2:len(txt) - 1] == ".0" {
+            txt = txt[:len(txt) - 2]
+            return txt
+        }
+
+        return txt
+    default:
+        return fmt.Sprintf("%v", v)
+    }
+}
+
+func (i *interpreter) evaluate(expr ast.Expression) interface{} {
+    val, _ := expr.Accept(i)
+    return val
+}
+
+func (i *interpreter) VisitForLiteral(expr *ast.Literal) interface{} {
     return expr.Value
 }
 
@@ -25,7 +65,7 @@ func (i *interpreter) VisitForUnary(expr *ast.Unary) interface{} {
     case token.Minus:
         n, err := i.convertToFloat64(right)
         if err != nil {
-            panic("HANDLE THIS LATER")
+           return runtimeError{token: expr.Operator, msg: "Operand must be a number"}
         }
         return -n 
     case token.Bang:
@@ -71,6 +111,7 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 
     if hasConvErr && expr.Operator.TokenType != token.Plus {
         // add error handling afterwards
+        return runtimeError{token: expr.Operator, msg: "Operand must be a number" }
     }
 
     switch expr.Operator.TokenType {
@@ -118,7 +159,3 @@ func (i *interpreter) convertToFloat64(val interface{}) (float64, error) {
     }
 }
 
-func (i *interpreter) evaluate(expr ast.Expression) interface{} {
-    val, _ := expr.Accept(i)
-    return val
-}
