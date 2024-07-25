@@ -91,8 +91,8 @@ func (i *interpreter) VisitForGrouping(expr *ast.Grouping) interface{} {
 }
 
 func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
-	left := i.evaluate(expr.Left.Expression)
-	right := i.evaluate(expr.Right.Expression)
+	left := i.evaluate(expr.Left)
+	right := i.evaluate(expr.Right)
 
 	l, lErr := i.convertToFloat64(left)
 	r, rErr := i.convertToFloat64(right)
