@@ -92,7 +92,7 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 	l, lErr := i.convertToFloat64(left)
 	r, rErr := i.convertToFloat64(right)
 
-	hasConvErr := lErr != nil && rErr != nil
+	hasConvErr := lErr != nil || rErr != nil
 	if hasConvErr && expr.Operator.TokenType == token.Plus {
 		strL := fmt.Sprintf("%v", left)
 		strR := fmt.Sprintf("%v", right)
