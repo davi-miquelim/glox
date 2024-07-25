@@ -38,11 +38,6 @@ func (i *interpreter) stringify(obj interface{}) string {
 		return "null"
 	case float64:
 		txt := strconv.FormatFloat(v, 'g', -1, 64)
-		if txt[len(txt)-2:len(txt)-1] == ".0" {
-			txt = txt[:len(txt)-2]
-			return txt
-		}
-
 		return txt
 	default:
 		return fmt.Sprintf("%v", v)
