@@ -105,7 +105,6 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 	}
 
 	if hasConvErr && expr.Operator.TokenType != token.Plus {
-		// add error handling afterwards
 		return runtimeError{token: expr.Operator, msg: "Operand must be a number"}
 	}
 
