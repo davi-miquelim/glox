@@ -59,11 +59,13 @@ func run(source string) {
 
 	if loxParser.HadError == true {
 		hadError = true
+        return
 	}
 
 	loxInterpreter.Interpret(exprTree)
 	if loxInterpreter.HadRuntimeError == true {
 		hadRuntimeError = true
+        return
 	}
 }
 

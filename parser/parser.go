@@ -74,7 +74,7 @@ func (p *parser) unary() ast.Expression {
 		operator := p.previous()
 		right, err := p.primary()
 		if err != nil {
-			panic(err)
+            return ast.Expression{}
 		}
 
 		unary := ast.NewUnary(operator, ast.Expression{Literal: right.Literal})
@@ -83,7 +83,7 @@ func (p *parser) unary() ast.Expression {
 
 	primary, err := p.primary()
 	if err != nil {
-		panic(err)
+        return ast.Expression{}
 	}
 
 	return primary
@@ -113,7 +113,7 @@ func (p *parser) primary() (ast.Expression, error) {
 		return ast.Expression{Grouping: &grouping}, nil
 	}
 
-	return ast.Expression{}, fmt.Errorf("%v", p.error(p.peek(), "Expected expression."))
+	return ast.Expression{}, fmt.Errorf("%v", p.parseError(p.peek(), "Expected expression"))
 }
 
 func (p *parser) match(tknTypes ...int) bool {
@@ -134,10 +134,10 @@ func (p *parser) consume(tknType int, message string) (*token.Token, error) {
 	}
 
 	currentTkn := p.peek()
-	return nil, fmt.Errorf("%v", p.error(currentTkn, message))
+	return nil, fmt.Errorf("%v", p.parseError(currentTkn, message))
 }
 
-func (p *parser) error(tkn token.Token, message string) *parserError {
+func (p *parser) parseError(tkn token.Token, message string) *parserError {
 	if tkn.TokenType == token.Eof {
 		where := " at end"
 		p.report(tkn.Line, &where, message)
@@ -154,11 +154,12 @@ func (p *parser) report(line int, where *string, message string) error {
 
 	if where == nil {
 		err := fmt.Errorf("[line %d] Error %s", line, message)
-		fmt.Println(err)
-		return nil
+        fmt.Println(err)
+		return err
 	}
 
 	err := fmt.Errorf("[line %d] Error %s: %s", line, message, *where)
+    fmt.Println(err)
 	return err
 }
 
