@@ -26,7 +26,8 @@ func (i *interpreter) Interpret(expr ast.Expression) {
 	if _, ok := val.(runtimeError); ok == true {
 		i.HadRuntimeError = true
 		err := val.(runtimeError)
-		fmt.Printf("%s\n[line %d]\n", err.msg, err.token.Line)
+		fmt.Printf("[line %d] %s\n", err.token.Line, err.msg)
+        return
 	}
 
 	fmt.Println(i.stringify(val))
