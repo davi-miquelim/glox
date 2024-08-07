@@ -104,7 +104,8 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 		return builder.String()
 	}
 
-	if hasConvErr && i.isArithmeticOperator(expr.Operator.TokenType) {
+    cantMixTypes := i.isArithmeticOperator(expr.Operator.TokenType) || i.isComparisonOperator(expr.Operator.TokenType)
+	if hasConvErr && cantMixTypes {
 		return runtimeError{token: expr.Operator, msg: "Operand must be a number"}
 	}
 
@@ -112,6 +113,9 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 	case token.Minus:
 		return l - r
 	case token.Slash:
+        if r == 0 {
+            return runtimeError{token: expr.Operator, msg: "Invalid operation: can't divide by 0"}
+        }
 		return l / r
 	case token.Star:
 		return l * r
@@ -142,6 +146,10 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 
 func (i *interpreter) isArithmeticOperator(tknType int) bool {
     return tknType == token.Plus || tknType == token.Minus || tknType == token.Star || tknType == token.Slash
+}
+
+func (i *interpreter) isComparisonOperator(tknType int) bool {
+    return tknType == token.Greater || tknType == token.GreaterEqual || tknType == token.Less || tknType == token.LessEqual
 }
 
 func (i *interpreter) convertToFloat64(val interface{}) (float64, error) {
