@@ -104,7 +104,7 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 		return builder.String()
 	}
 
-	if hasConvErr && expr.Operator.TokenType != token.Plus {
+	if hasConvErr && i.isArithmeticOperator(expr.Operator.TokenType) {
 		return runtimeError{token: expr.Operator, msg: "Operand must be a number"}
 	}
 
@@ -126,12 +126,22 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 	case token.LessEqual:
 		return l <= r
 	case token.BangEqual:
+        if hasConvErr {
+		    return !(left == right)
+        }
 		return !(l == r)
 	case token.EqualEqual:
+        if hasConvErr {
+		    return left == right
+        }
 		return l == r
 	}
 
 	return nil
+}
+
+func (i *interpreter) isArithmeticOperator(tknType int) bool {
+    return tknType == token.Plus || tknType == token.Minus || tknType == token.Star || tknType == token.Slash
 }
 
 func (i *interpreter) convertToFloat64(val interface{}) (float64, error) {

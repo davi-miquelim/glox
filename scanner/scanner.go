@@ -161,8 +161,7 @@ func (s *scanner) Error(line int, where *string, message string) {
 }
 
 func (s *scanner) identifier() {
-	c := s.peek()
-	for s.isAtEnd() == true && len(c) == 1 && (unicode.IsLetter(rune(c[0])) || unicode.IsDigit(rune(c[0]))) {
+	for s.isAtEnd() == false && (unicode.IsLetter(rune(s.peek()[0])) || unicode.IsDigit(rune(s.peek()[0]))) {
 		s.advance()
 	}
 
@@ -193,7 +192,6 @@ func (s *scanner) number() {
 	strDigit := string(s.source[s.start:s.current])
 	digit, err := strconv.ParseFloat(strDigit, 64)
 	var iDigit interface{} = digit
-
 	if err != nil {
 		panic(err)
 	}
