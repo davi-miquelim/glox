@@ -55,14 +55,14 @@ func run(source string) {
 
 	loxInterpreter := interpreter.NewInterpreter()
 	loxParser := parser.NewParser(tokens)
-	exprTree := loxParser.Parse()
+	stmtSlice := loxParser.Parse()
 
 	if loxParser.HadError == true {
 		hadError = true
         return
 	}
 
-	loxInterpreter.Interpret(exprTree)
+	loxInterpreter.Interpret(stmtSlice)
 	if loxInterpreter.HadRuntimeError == true {
 		hadRuntimeError = true
         return

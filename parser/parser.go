@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"glox/ast"
+	"glox/stmt"
 	"glox/token"
 )
 
@@ -14,12 +15,40 @@ type parser struct {
 	HadError bool
 }
 
-func (p *parser) Parse() ast.Expression {
-	return p.expresion()
+func (p *parser) Parse() []stmt.Stmt {
+    var statements []stmt.Stmt
+
+    for p.isAtEnd() == false {
+        statements = append(statements, p.statement())
+    }
+
+	return statements
 }
 
 func (p *parser) expresion() ast.Expression {
 	return p.equality()
+}
+
+func (p *parser) statement() stmt.Stmt {
+    if p.match(token.Print) {
+        return p.printStatement()
+    }
+
+    return p.expressionStatement()
+}
+
+func (p *parser) printStatement() stmt.Stmt {
+    val := p.expresion()
+    p.consume(token.SemiColon, "Expect ';' after value.")
+
+    return stmt.Stmt{Print: &stmt.Print{Expr: val} }
+}
+
+func (p *parser) expressionStatement() stmt.Stmt {
+    expr := p.expresion()
+    p.consume(token.SemiColon, "Expect ';' after expression.")
+
+    return stmt.Stmt{Expression: &expr}
 }
 
 func (p *parser) equality() ast.Expression {

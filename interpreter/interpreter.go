@@ -3,6 +3,7 @@ package interpreter
 import (
 	"fmt"
 	"glox/ast"
+	"glox/stmt"
 	"glox/token"
 	"strconv"
 	"strings"
@@ -21,16 +22,14 @@ func NewInterpreter() *interpreter {
 	return &interpreter{HadRuntimeError: false}
 }
 
-func (i *interpreter) Interpret(expr ast.Expression) {
-	val := i.evaluate(expr)
-	if _, ok := val.(runtimeError); ok == true {
-		i.HadRuntimeError = true
-		err := val.(runtimeError)
-		fmt.Printf("[line %d] %s\n", err.token.Line, err.msg)
-        return
-	}
-
-	fmt.Println(i.stringify(val))
+func (i *interpreter) Interpret(statements []stmt.Stmt) {
+    for j := range(len(statements)) {
+        err := i.execute(statements[j])
+        if err != nil {
+            // remember to handle this
+            fmt.Printf("Runtime error")
+        }
+    }
 }
 
 func (i *interpreter) stringify(obj interface{}) string {
@@ -50,6 +49,16 @@ func (i *interpreter) evaluate(expr ast.Expression) interface{} {
 	return val
 }
 
+func (i *interpreter) execute(statement stmt.Stmt) error {
+    statement.Accept(i)
+    return nil
+}
+
+func (i *interpreter) VisitForPrintStmt(stmt *stmt.Print)  {
+    val := i.evaluate(stmt.Expr)
+    fmt.Println(i.stringify(val))
+}
+
 func (i *interpreter) VisitForLiteral(expr *ast.Literal) interface{} {
 	return expr.Value
 }
@@ -61,6 +70,7 @@ func (i *interpreter) VisitForUnary(expr *ast.Unary) interface{} {
 	case token.Minus:
 		n, err := i.convertToFloat64(right)
 		if err != nil {
+            i.HadRuntimeError = true
 			return runtimeError{token: expr.Operator, msg: "Operand must be a number"}
 		}
 		return -n
@@ -107,6 +117,7 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 
     cantMixTypes := i.isArithmeticOperator(expr.Operator.TokenType) || i.isComparisonOperator(expr.Operator.TokenType)
 	if hasConvErr && cantMixTypes {
+        i.HadRuntimeError = true
 		return runtimeError{token: expr.Operator, msg: "Operand must be a number"}
 	}
 
@@ -115,6 +126,7 @@ func (i *interpreter) VisitForBinary(expr *ast.Binary) interface{} {
 		return l - r
 	case token.Slash:
         if r == 0 {
+            i.HadRuntimeError = true
             return runtimeError{token: expr.Operator, msg: "Invalid operation: can't divide by 0"}
         }
 		return l / r
