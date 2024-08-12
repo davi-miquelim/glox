@@ -10,6 +10,7 @@ type Visitor interface {
 	VisitForLiteral(*Literal) interface{}
 	VisitForBinary(*Binary) interface{}
 	VisitForUnary(*Unary) interface{}
+    VisitForAssign(*Assign) interface{}
 }
 
 type Expression struct {
@@ -17,6 +18,7 @@ type Expression struct {
 	*Grouping
 	*Binary
 	*Unary
+    *Assign
 }
 
 func (obj *Expression) Accept(v Visitor) (interface{}, error) {
@@ -28,6 +30,8 @@ func (obj *Expression) Accept(v Visitor) (interface{}, error) {
 		return v.VisitForBinary(obj.Binary), nil
 	} else if obj.Unary != nil {
 		return v.VisitForUnary(obj.Unary), nil
+	} else if obj.Assign != nil {
+		return v.VisitForAssign(obj.Assign), nil
 	} else {
 		return nil, errors.New("nil expression")
 	}
@@ -90,6 +94,15 @@ type Unary struct {
 
 func NewUnary(operator token.Token, right Expression) *Unary {
 	return &Unary{Right: right, Operator: operator}
+}
+
+type Assign struct {
+    Name token.Token
+    Val Expression
+}
+
+func NewAssign(name token.Token, val Expression) *Assign {
+    return &Assign{Name: name, Val: val}
 }
 
 func (obj *Unary) Accept(v Visitor) {

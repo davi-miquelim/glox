@@ -3,14 +3,17 @@ package stmt
 import (
 	"errors"
 	"glox/ast"
+	"go/token"
 )
 
 type Visitor interface {
 	VisitForPrintStmt(*Print)
+	VisitForVarStmt(*Var)
 }
 
 type Stmt struct {
 	*Print
+    *Var
     Expression *ast.Expression
 }
 
@@ -25,6 +28,11 @@ func (statement *Stmt) Accept(v Visitor) (interface{}, error) {
 
 type Print struct {
 	Expr ast.Expression
+}
+
+type Var struct {
+    Name token.Token
+    Initializer ast.Expression 
 }
 
 func (p *Print) Accept(v Visitor) {
